@@ -4,8 +4,8 @@
     {
       "Sid": "ListOnlyPortfolioBucket",
       "Effect": "Allow",
-      "Action": ["s3:ListBucket"],
-      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
+      "Action": ["s3:ListBucket", "s3:ListBucketMultipartUploads"],
+      "Resource": "arn:aws:s3:::cloud-portfolio-577500259963"
     },
     {
       "Sid": "UploadAndRemovePortfolioFiles",
@@ -16,19 +16,13 @@
         "s3:AbortMultipartUpload",
         "s3:ListMultipartUploadParts"
       ],
-      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME/*"
-    },
-    {
-      "Sid": "ListMultipartUploadsInPortfolioBucket",
-      "Effect": "Allow",
-      "Action": ["s3:ListBucketMultipartUploads"],
-      "Resource": "arn:aws:s3:::YOUR_BUCKET_NAME"
+      "Resource": "arn:aws:s3:::cloud-portfolio-577500259963/*"
     },
     {
       "Sid": "InvalidateOnlyPortfolioDistribution",
       "Effect": "Allow",
       "Action": ["cloudfront:CreateInvalidation"],
-      "Resource": "arn:aws:cloudfront::YOUR_AWS_ACCOUNT_ID:distribution/YOUR_DISTRIBUTION_ID"
+      "Resource": "arn:aws:cloudfront::577500259963:distribution/E2HQKB0TMNBJ3K"
     }
   ]
 }

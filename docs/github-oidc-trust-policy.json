@@ -5,13 +5,13 @@
       "Sid": "GitHubActionsFromMainBranch",
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::YOUR_AWS_ACCOUNT_ID:oidc-provider/token.actions.githubusercontent.com"
+        "Federated": "arn:aws:iam::577500259963:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:YOUR_GITHUB_OWNER@YOUR_GITHUB_OWNER_ID/aws-static-portfolio@YOUR_GITHUB_REPOSITORY_ID:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:ZJXDL@192978802/aws-static-portfolio@1414794721:ref:refs/heads/main"
         }
       }
     }

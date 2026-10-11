@@ -2,7 +2,7 @@
 
 A small, production-minded cloud project log hosted from a **private S3 bucket** and delivered through **Amazon CloudFront**. OpenTofu creates the AWS resources. The repository includes a GitHub Actions OIDC deployment pattern, but its AWS role and repository settings are a documented next step and are not configured yet.
 
-> The source repository is public at [github.com/ZJXDL/aws-static-portfolio](https://github.com/ZJXDL/aws-static-portfolio). The workflow is prepared, but automatic deployments will start only after its AWS OIDC role and repository variables are configured.
+> The source repository is public at [github.com/ZJXDL/aws-static-portfolio](https://github.com/ZJXDL/aws-static-portfolio). The workflow is prepared, but automatic deployments will start only after its AWS OIDC role and repository variables are configured. Until then, the workflow skips safely.
 
 > The live page describes the deployed AWS project and contains no personal profile or CV details. Add other projects to `site/index.html` as they are built.
 
@@ -95,11 +95,11 @@ OpenTofu state contains identifiers and configuration details about your resourc
 
 ## 3. Set up GitHub Actions access
 
-Create a dedicated IAM role for this repository's deployment workflow:
+Create a dedicated IAM role for this repository's deployment workflow. The policy files in `docs/` are already filled in for this AWS account and repository:
 
-1. In IAM, ensure your account has the GitHub Actions OIDC identity provider `token.actions.githubusercontent.com`. Add it only if the account does not already have it.
-2. Create a role for web identity using that provider. Use the trust policy example in `docs/github-oidc-trust-policy.json` and replace `YOUR_AWS_ACCOUNT_ID`, `YOUR_GITHUB_OWNER`, `YOUR_GITHUB_OWNER_ID`, and `YOUR_GITHUB_REPOSITORY_ID`. Repositories created after July 15, 2026 use immutable IDs in the default OIDC subject, so this template includes both IDs. You can find the owner ID and repository ID from the GitHub REST API (`GET /users/{username}` or `GET /orgs/{org}`, and `GET /repos/{owner}/{repo}`). The repository name and `main` branch must match your repository and deployment branch. For an older repository that has not opted into immutable subjects, use its current subject format as shown in [GitHub's OIDC reference](https://docs.github.com/en/actions/reference/security/oidc).
-3. Attach an inline policy based on `docs/github-deploy-policy.json`. Replace `YOUR_BUCKET_NAME`, `YOUR_AWS_ACCOUNT_ID`, and `YOUR_DISTRIBUTION_ID` with the OpenTofu outputs and your AWS account ID. This role is separate from the local identity used to run OpenTofu.
+1. In IAM, ensure your account has the GitHub Actions OIDC identity provider `token.actions.githubusercontent.com`. If it is missing, create it with audience `sts.amazonaws.com`.
+2. Create an IAM role named `GitHubPortfolioDeployRole` for web identity using that provider. Set its trust relationship to the contents of `docs/github-oidc-trust-policy.json`. This exact subject is limited to this repository's `main` branch and uses GitHub's immutable owner and repository IDs.
+3. Attach an inline permissions policy to the role using `docs/github-deploy-policy.json`. This policy can upload or delete objects only in this project's bucket and invalidate only this CloudFront distribution. It cannot modify infrastructure.
 4. Add these **repository variables** in GitHub under **Settings → Secrets and variables → Actions → Variables**:
 
    | Variable | Value |
@@ -109,7 +109,7 @@ Create a dedicated IAM role for this repository's deployment workflow:
    | `SITE_BUCKET` | OpenTofu `bucket_name` output |
    | `CLOUDFRONT_DISTRIBUTION_ID` | OpenTofu `distribution_id` output |
 
-The workflow needs `id-token: write` to request a GitHub OIDC token. AWS then checks the token's audience and repository/branch subject against the IAM role trust policy. The credentials are short-lived. No AWS access key is stored in GitHub.
+The workflow needs `id-token: write` to request a GitHub OIDC token. AWS then checks the token's audience and repository/branch subject against the IAM role trust policy. The credentials are short-lived. No AWS access key is stored in GitHub. The workflow skips while `AWS_ROLE_ARN` is empty; after adding the variables, run it once from the GitHub Actions tab to verify deployment.
 
 ## 4. Publish changes
 
