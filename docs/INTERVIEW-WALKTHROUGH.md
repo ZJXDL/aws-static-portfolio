@@ -2,7 +2,7 @@
 
 ## 30-second summary
 
-> This project provisions a static site on AWS with OpenTofu. CloudFront serves it over HTTPS from a private S3 bucket. Origin Access Control signs CloudFront's requests, and the bucket policy allows reads only from this distribution. GitHub Actions deploys site changes using OIDC and short-lived AWS credentials. The workflow syncs the site to S3 and invalidates CloudFront. The infrastructure also configures security headers, encryption, versioning, and a teardown path.
+> Minefield is a browser-side Minesweeper game with four modes. I host the static HTML, CSS, and JavaScript on AWS: CloudFront serves it over HTTPS from a private S3 bucket. Origin Access Control signs CloudFront's requests, and the bucket policy allows reads only from this distribution. GitHub Actions deploys game changes using OIDC and short-lived AWS credentials, then invalidates CloudFront. OpenTofu manages the infrastructure, including security headers, encryption, versioning, and teardown.
 
 ## How a page request works
 

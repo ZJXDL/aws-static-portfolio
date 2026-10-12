@@ -3,89 +3,150 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A thoughtful little game of Minesweeper. Pick a difficulty, read the clues, and clear the board.">
-    <meta name="theme-color" content="#f4ead8">
-    <title>Minefield — A Cloud Engineering Project</title>
+    <meta name="description" content="Minefield is a playful Minesweeper with Classic, Daily, Expedition, and Blitz modes.">
+    <meta name="theme-color" content="#f2ead8">
+    <title>Minefield — Find your way through</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#game">Skip to the game</a>
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Minefield, back to top">
-        <span class="wordmark-mark" aria-hidden="true">✳</span>
-        <span>FIELD STUDY <i>01</i></span>
+    <a class="skip-link" href="#board">Skip to the board</a>
+    <div class="page-wash" aria-hidden="true"></div>
+    <header class="topbar" id="top">
+      <a class="brand" href="#top" aria-label="Minefield home">
+        <span class="brand-glyph" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="brand-name">MINEFIELD</span>
+        <span class="brand-edition">FIELD NOTES <b>01</b></span>
       </a>
-      <span class="header-note">A SMALL GAME ABOUT PAYING ATTENTION</span>
-      <a class="source-link" href="https://github.com/ZJXDL/aws-static-portfolio" target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a>
+      <div class="top-actions">
+        <button class="icon-button sound-button" id="sound-toggle" type="button" aria-pressed="false" aria-label="Turn sound on">
+          <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
+          <svg class="sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
+        </button>
+        <button class="icon-button help-button" id="help-open" type="button" aria-label="How to play">?</button>
+      </div>
     </header>
 
-    <main id="top">
-      <section class="intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow"><span></span> MINESWEEPER · MADE FOR THE BROWSER</p>
-          <h1 id="page-title">A little game of<br><em>calculated risk.</em></h1>
+    <main class="app-shell">
+      <section class="game-heading">
+        <div class="title-lockup">
+          <p class="overline"><span class="live-dot"></span> PICK A FIELD · MAKE YOUR MOVE</p>
+          <h1>Mine<span>field</span><sup>✳</sup></h1>
         </div>
-        <p class="intro-copy">Clear the field one square at a time. The numbers tell you how close the mines are. Take your time; the first square is always safe.</p>
+        <p class="heading-aside">Read the clues.<br>Trust your instincts.</p>
       </section>
 
-      <section class="game-layout" id="game" aria-label="Minesweeper">
-        <div class="game-main">
-          <div class="game-toolbar">
-            <label class="difficulty-label" for="difficulty">FIELD SIZE
-              <select id="difficulty" name="difficulty">
+      <nav class="mode-picker" aria-label="Choose a game mode">
+        <button class="mode-tab is-active" type="button" data-mode="classic" aria-pressed="true">
+          <span class="mode-glyph glyph-classic" aria-hidden="true">▦</span><span class="mode-copy"><strong>Classic</strong><small>THE ORIGINAL</small></span><span class="mode-key">01</span>
+        </button>
+        <button class="mode-tab" type="button" data-mode="daily" aria-pressed="false">
+          <span class="mode-glyph glyph-daily" aria-hidden="true">◷</span><span class="mode-copy"><strong>Daily</strong><small>ONE SHARED FIELD</small></span><span class="mode-key">02</span>
+        </button>
+        <button class="mode-tab" type="button" data-mode="expedition" aria-pressed="false">
+          <span class="mode-glyph glyph-expedition" aria-hidden="true">⌁</span><span class="mode-copy"><strong>Expedition</strong><small>THREE STAGES · 3 LIVES</small></span><span class="mode-key">03</span>
+        </button>
+        <button class="mode-tab" type="button" data-mode="blitz" aria-pressed="false">
+          <span class="mode-glyph glyph-blitz" aria-hidden="true">ϟ</span><span class="mode-copy"><strong>Blitz</strong><small>60 SECONDS · 3 LIVES</small></span><span class="mode-key">04</span>
+        </button>
+      </nav>
+
+      <section class="play-area" aria-label="Game">
+        <div class="game-column">
+          <div class="game-topline">
+            <label class="difficulty-wrap" id="difficulty-wrap">FIELD SIZE
+              <select id="difficulty" aria-label="Choose classic field size">
                 <option value="beginner">Small · 9 × 9</option>
                 <option value="intermediate">Medium · 16 × 16</option>
                 <option value="expert">Large · 16 × 30</option>
               </select>
             </label>
-            <button class="new-game" id="new-game" type="button"><span aria-hidden="true">↻</span> New game</button>
+            <div class="board-caption"><span class="caption-dot"></span><span id="mode-caption">CLASSIC FIELD</span></div>
+            <button class="new-game" id="new-game" type="button"><span aria-hidden="true">↻</span> <b>New field</b></button>
           </div>
 
-          <div class="scorebar" aria-label="Game status">
-            <div class="score"><span>MINES LEFT</span><strong id="mine-count">010</strong></div>
-            <div class="face-wrap"><button class="face-button" id="face-button" type="button" aria-label="Start a new game">☺</button></div>
-            <div class="score score-time"><span>TIME</span><strong id="timer">000</strong></div>
-          </div>
-
-          <div class="board-frame">
-            <div class="board-scroll">
-              <div class="board" id="board" role="group" aria-label="Minesweeper board"></div>
+          <div class="console">
+            <div class="hud">
+              <div class="hud-stat"><span id="left-label">MINES</span><strong id="left-value">010</strong></div>
+              <button class="face-button" id="face-button" type="button" aria-label="Start a new field">☺</button>
+              <div class="hud-stat hud-stat-right"><span id="right-label">TIME</span><strong id="right-value">000</strong></div>
             </div>
-          </div>
-          <div class="game-message" id="game-message" role="status" aria-live="polite">Choose a square to begin.</div>
-          <div class="game-controls">
-            <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false"><span aria-hidden="true">⚑</span> Flag mode <kbd>F</kbd></button>
-            <p>Reveal: click or tap <span>·</span> Flag: right-click or use flag mode</p>
+            <div class="status-line">
+              <span class="status-lamp" aria-hidden="true"></span>
+              <p id="game-message" role="status" aria-live="polite">The first move is always safe.</p>
+              <span class="daily-stamp" id="daily-stamp" hidden></span>
+            </div>
+            <div class="board-frame">
+              <div class="board-scroll" id="board-scroll">
+                <div class="board" id="board" role="group" aria-label="Minesweeper board"></div>
+                <div class="result-overlay" id="result-overlay" hidden>
+                  <div class="result-card">
+                    <span class="result-symbol" id="result-symbol" aria-hidden="true">✳</span>
+                    <p class="result-kicker" id="result-kicker">FIELD CLEARED</p>
+                    <h2 id="result-title">Nicely done.</h2>
+                    <p id="result-copy">That was a clean run.</p>
+                    <button class="result-button" id="result-again" type="button">Take another run <span aria-hidden="true">↗</span></button>
+                    <button class="share-button" id="share-result" type="button">Copy result</button>
+                  </div>
+                  <div class="confetti" id="confetti" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+            <div class="board-tools">
+              <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false"><span aria-hidden="true">⚑</span><b>Flag mode</b><kbd>F</kbd></button>
+              <p><span class="desktop-hint">Click to reveal <i>·</i> right-click to flag</span><span class="mobile-hint">Tap to reveal <i>·</i> flag mode to mark</span></p>
+              <span class="board-size" id="board-size">9 × 9</span>
+            </div>
           </div>
         </div>
 
-        <aside class="side-notes">
-          <div class="note-heading"><span class="note-number">01</span><span>HOW TO PLAY</span></div>
-          <h2>Read the field.</h2>
-          <p>Each number counts the mines in the eight squares around it. Use those clues to decide what’s safe.</p>
-          <ol class="rules-list">
-            <li><span>01</span><p><strong>Open a square.</strong> The first move is guaranteed safe, with a clear space around it.</p></li>
-            <li><span>02</span><p><strong>Follow the numbers.</strong> A <b>1</b> touches one mine; a <b>2</b> touches two.</p></li>
-            <li><span>03</span><p><strong>Mark the danger.</strong> Flag suspected mines, then open every safe square to win.</p></li>
-          </ol>
-          <div class="best-note"><span aria-hidden="true">✳</span><p>No rush. The timer starts on your first move.</p></div>
+        <aside class="side-panel" aria-label="Run details">
+      <div class="mission-head">
+            <span class="panel-overline" id="mission-overline">YOUR FIELD</span>
+            <span class="panel-pin" aria-hidden="true">✳</span>
+          </div>
+          <h2 id="mission-title">Take it one square at a time.</h2>
+          <p class="mission-copy" id="mission-copy">Numbers count nearby mines. Open every safe square to clear the field.</p>
+          <div class="panel-rule"></div>
+          <div class="run-stat" id="lives-wrap" hidden>
+            <span id="lives-label">LIVES</span>
+            <strong class="hearts" id="lives-value" aria-label="3 lives remaining">♥ ♥ ♥</strong>
+          </div>
+          <div class="run-stat" id="stage-wrap" hidden>
+            <span>EXPEDITION</span>
+            <strong id="stage-value">01 <i>/ 03</i></strong>
+          </div>
+          <div class="run-stat best-stat">
+            <span id="best-label">BEST TIME</span>
+            <strong id="best-value">— — : — —</strong>
+          </div>
+          <div class="daily-note" id="daily-note" hidden>
+            <span class="daily-flower" aria-hidden="true">✳</span>
+            <p>Same field for everyone.<br><strong>New one at midnight UTC.</strong></p>
+          </div>
+          <div class="panel-bottom">
+            <span class="tiny-star" aria-hidden="true">✳</span>
+            <p id="mode-tip">A number tells you how many mines touch that square.</p>
+          </div>
         </aside>
       </section>
 
-      <section class="project-note" aria-label="About the cloud project">
-        <div class="project-note-mark" aria-hidden="true">↗</div>
-        <div>
-          <p class="eyebrow">BEHIND THE GAME</p>
-          <p>This game is a static website hosted on AWS. CloudFront serves it over HTTPS from a private S3 bucket; OpenTofu defines the infrastructure, and GitHub Actions publishes updates.</p>
-          <details>
-            <summary>How the site is deployed</summary>
-            <p>A push to <code>main</code> starts a GitHub Actions workflow. AWS verifies the workflow with OIDC and grants temporary, limited credentials to upload the site and clear the CloudFront cache. The workflow cannot change the AWS infrastructure.</p>
-          </details>
-        </div>
-      </section>
+      <footer class="app-footer">
+        <span>USE <kbd>F</kbd> TO SWITCH TO FLAG MODE</span>
+        <span>MADE FOR A MOMENT BETWEEN THINGS <i>✳</i></span>
+      </footer>
     </main>
 
-    <footer class="site-footer"><span>FIELD STUDY 01 <i>·</i> CLOUD ENGINEERING</span><span>Built with HTML, CSS, JavaScript, AWS, and OpenTofu</span></footer>
+    <dialog class="help-dialog" id="help-dialog" aria-labelledby="help-title">
+      <button class="dialog-close" type="button" aria-label="Close help">×</button>
+      <p class="overline"><span class="live-dot"></span> THE QUICK VERSION</p>
+      <h2 id="help-title">A few good clues<br>go a long way.</h2>
+      <div class="help-row"><span>01</span><p><strong>Open a square.</strong> The first move opens a safe patch of ground.</p></div>
+      <div class="help-row"><span>02</span><p><strong>Read the number.</strong> It counts mines in the eight squares touching it.</p></div>
+      <div class="help-row"><span>03</span><p><strong>Mark the danger.</strong> Right-click, or turn on Flag mode. On a keyboard, press <kbd>F</kbd>.</p></div>
+      <div class="help-row"><span>04</span><p><strong>Clear the field.</strong> Open all safe squares. Arrow keys move around the board.</p></div>
+      <p class="help-footer">Daily is one shared puzzle. Expedition is three fields, three lives. Blitz is a one-minute sprint.</p>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
