@@ -68,4 +68,4 @@ docs/                    Architecture notes and OIDC policy examples
 .github/workflows/       GitHub Actions deployment workflow
 ```
 
-The application is a static, single-player browser game. It has no backend, database, user accounts, or shared leaderboard; the AWS implementation demonstrates infrastructure as code, private origin delivery, and identity-based CI/CD for a static workload.
+The application is a static, single-player browser game. Themes, hazard styles, and personal records are saved in the browser; there is no backend, database, user account system, or shared leaderboard. The AWS implementation demonstrates infrastructure as code, private origin delivery, and identity-based CI/CD for a static workload.

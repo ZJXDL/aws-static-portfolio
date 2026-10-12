@@ -1,76 +1,180 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="paprika" data-skin="classic">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A clean, classic game of Minesweeper.">
-    <meta name="theme-color" content="#f7f1e7">
-    <title>Minesweeper</title>
+    <meta name="description" content="A bright, playful home for classic Minesweeper and daily field challenges.">
+    <meta name="theme-color" content="#f7eee2">
+    <title>Minefield — Find your kind of fun</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#game">Skip to game</a>
-    <header class="site-header" id="top">
-      <a class="wordmark" href="#top" aria-label="Minefield home">
-        <span class="wordmark-mark" aria-hidden="true">✳</span>
-        <span>MINEFIELD</span>
+    <a class="skip-link" href="#game">Skip to the game</a>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Minefield home" id="top">
+        <span class="brand-mark" aria-hidden="true"><span>✳</span></span>
+        <span class="brand-name">MINEFIELD<span class="brand-period">.</span></span>
       </a>
-      <span class="header-tag">CLASSIC</span>
+      <div class="header-tools">
+        <span class="live-pill"><i aria-hidden="true"></i> READY WHEN YOU ARE</span>
+      </div>
     </header>
 
-    <main>
-      <section class="game-shell" id="game" aria-labelledby="page-title">
-        <div class="game-heading">
-          <div class="title-group">
-            <p class="eyebrow">THE CLASSIC</p>
-            <h1 id="page-title">Minesweeper<span aria-hidden="true">.</span></h1>
+    <main id="top-content">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-star" aria-hidden="true">✳</span> THE MINDFUL MAYHEM CLUB</p>
+          <h1 id="page-title">Find your<br><em>kind of fun.</em></h1>
+          <p class="hero-description">One familiar puzzle. Five little twists. Pick a mood and make your next move count.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <span class="art-sun"></span>
+          <span class="art-orbit art-orbit-one"></span>
+          <span class="art-orbit art-orbit-two"></span>
+          <span class="art-spark art-spark-one">✳</span>
+          <span class="art-spark art-spark-two">✦</span>
+          <span class="art-caption">A LITTLE<br>LOGIC<br><b>A LOT OF JOY</b></span>
+        </div>
+        <span class="hero-index" aria-hidden="true">01<br><i>—</i><br>05</span>
+      </section>
+
+      <section class="mode-section" aria-labelledby="mode-heading">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">PICK YOUR PACE</p>
+            <h2 id="mode-heading">How do you want to play?</h2>
           </div>
-          <div class="game-toolbar">
-            <label class="level-select" for="difficulty">
-              <span>BOARD</span>
-              <select id="difficulty" name="difficulty">
-                <option value="beginner">Beginner · 9 × 9</option>
-                <option value="intermediate">Intermediate · 16 × 16</option>
-                <option value="expert">Expert · 16 × 30</option>
+          <span class="section-aside">Same satisfying grid.<br>A different little adventure.</span>
+        </div>
+
+        <div class="mode-grid" role="group" aria-label="Game mode">
+          <button class="mode-card is-selected" type="button" data-mode="classic" aria-pressed="true">
+            <span class="mode-glyph glyph-classic" aria-hidden="true">✹</span>
+            <span class="mode-copy"><strong>Classic</strong><small>The original good thing.</small></span>
+            <span class="mode-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="daily" aria-pressed="false">
+            <span class="mode-glyph glyph-daily" aria-hidden="true">◷</span>
+            <span class="mode-copy"><strong>Daily</strong><small>One shared field a day.</small></span>
+            <span class="mode-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="blitz" aria-pressed="false">
+            <span class="mode-glyph glyph-blitz" aria-hidden="true">↯</span>
+            <span class="mode-copy"><strong>Blitz</strong><small>Beat the clock.</small></span>
+            <span class="mode-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="no-flags" aria-pressed="false">
+            <span class="mode-glyph glyph-no-flags" aria-hidden="true">◎</span>
+            <span class="mode-copy"><strong>No Flags</strong><small>Trust your numbers.</small></span>
+            <span class="mode-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="survival" aria-pressed="false">
+            <span class="mode-glyph glyph-survival" aria-hidden="true">⌁</span>
+            <span class="mode-copy"><strong>Survival</strong><small>Three boards. One life.</small></span>
+            <span class="mode-check" aria-hidden="true">✓</span>
+          </button>
+        </div>
+
+        <div class="setup-row">
+          <div class="difficulty-wrap" id="difficulty-wrap">
+            <span class="control-label">FIELD SIZE</span>
+            <div class="difficulty-options" role="group" aria-label="Field size">
+              <button class="size-chip is-active" type="button" data-difficulty="beginner" aria-pressed="true"><b>Small</b><span>9 × 9</span></button>
+              <button class="size-chip" type="button" data-difficulty="intermediate" aria-pressed="false"><b>Medium</b><span>16 × 16</span></button>
+              <button class="size-chip" type="button" data-difficulty="expert" aria-pressed="false"><b>Large</b><span>16 × 30</span></button>
+              <button class="size-chip custom-chip" type="button" data-difficulty="custom" aria-pressed="false"><b>Make one</b><span>Custom</span></button>
+            </div>
+          </div>
+
+          <div class="skin-wrap">
+            <label class="control-label" for="skin-select">HAZARD STYLE</label>
+            <div class="select-shell">
+              <span aria-hidden="true" class="select-spark">✦</span>
+              <select id="skin-select">
+                <option value="classic">Classic mines</option>
+                <option value="cosmos">Cosmic signals</option>
+                <option value="garden">Garden prickles</option>
+                <option value="ocean">Ocean jellyfish</option>
               </select>
-            </label>
-            <button class="new-game" id="new-game" type="button">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 8A6.5 6.5 0 0 0 4.7 5.7L3 7.4M3 3.8v3.7h3.7M3.8 12a6.5 6.5 0 0 0 11.5 2.3L17 12.6m0 3.6v-3.7h-3.7"/></svg>
-              <span>New game</span>
-            </button>
+            </div>
           </div>
         </div>
 
+        <div class="custom-panel" id="custom-panel" hidden>
+          <div class="custom-title"><span class="custom-icon" aria-hidden="true">✳</span><div><strong>Your field, your rules</strong><small>Set the shape and the level of mischief.</small></div></div>
+          <label class="range-control" for="custom-rows"><span>Rows <output id="rows-value" for="custom-rows">12</output></span><input id="custom-rows" type="range" min="8" max="24" value="12"></label>
+          <label class="range-control" for="custom-columns"><span>Columns <output id="columns-value" for="custom-columns">12</output></span><input id="custom-columns" type="range" min="8" max="30" value="12"></label>
+          <label class="range-control" for="custom-density"><span>Hazards <output id="density-value" for="custom-density">16%</output></span><input id="custom-density" type="range" min="10" max="24" value="16"></label>
+          <span class="custom-total" id="custom-total">23 hazards</span>
+        </div>
+      </section>
+
+      <section class="game-layout" id="game" aria-label="Minesweeper game">
         <div class="game-card">
-          <div class="scorebar" aria-label="Game status">
-            <div class="score">
-              <span>MINES</span>
-              <strong id="mine-count">010</strong>
-            </div>
-            <button class="face-button" id="face-button" type="button" aria-label="Start a new game">☺</button>
-            <div class="score score-time">
-              <span>TIME</span>
-              <strong id="timer">000</strong>
-            </div>
+          <div class="game-card-top">
+            <div class="round-label"><span class="round-dot" aria-hidden="true"></span><span id="round-label">CLASSIC · SMALL FIELD</span></div>
+            <button class="new-game" id="new-game" type="button"><span aria-hidden="true">↻</span> New run</button>
+          </div>
+
+          <div class="scoreboard" aria-label="Game status">
+            <div class="digital-stat"><span id="hazard-label">HAZARDS LEFT</span><strong id="mine-count">010</strong></div>
+            <button class="face-button" id="face-button" type="button" aria-label="Start a new run"><span aria-hidden="true">☺</span></button>
+            <div class="digital-stat time-stat"><span id="time-label">YOUR TIME</span><strong id="timer">000</strong></div>
           </div>
 
           <div class="board-frame">
-            <div class="board-scroll">
+            <div class="board-scroll" id="board-scroll">
               <div class="board" id="board" role="group" aria-label="Minesweeper board"></div>
             </div>
           </div>
 
-          <div class="game-bottom">
-            <div class="game-message" id="game-message" role="status" aria-live="polite">Tap a tile to begin.</div>
+          <div class="game-footer">
+            <p class="game-message" id="game-message" role="status" aria-live="polite">Pick a square. First one’s safe.</p>
             <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false">
-              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 17V3m.5.5h9l-2.2 3 2.2 3h-9"/></svg>
-              <span>Flag</span>
-              <kbd>F</kbd>
+              <span class="flag-glyph" aria-hidden="true">⚑</span><span>Flag mode</span><kbd>F</kbd>
             </button>
           </div>
+          <div class="control-hint"><span>CLICK TO REVEAL</span><i aria-hidden="true">·</i><span>RIGHT CLICK OR F TO MARK</span><i aria-hidden="true">·</i><span>ARROW KEYS TO MOVE</span></div>
         </div>
+
+        <aside class="side-stack" aria-label="Game details and preferences">
+          <section class="mission-card" aria-labelledby="mission-title">
+            <div class="card-overline"><span>YOUR LITTLE MISSION</span><span class="mission-stamp" aria-hidden="true">✦</span></div>
+            <h2 id="mission-title">The classic</h2>
+            <p id="mission-description">Find every safe square. Take all the time you need.</p>
+            <div class="daily-date" id="daily-date" hidden></div>
+            <div class="survival-progress" id="survival-progress" hidden aria-label="Survival board progress">
+              <span class="progress-step is-current" data-step="1">01</span><i></i><span class="progress-step" data-step="2">02</span><i></i><span class="progress-step" data-step="3">03</span>
+            </div>
+            <div class="mission-rule"><span class="rule-icon" aria-hidden="true">✳</span><span id="mission-rule">The first square and its neighbors are clear.</span></div>
+          </section>
+
+          <section class="record-card" aria-label="Personal records on this device">
+            <div class="card-overline"><span>YOUR LITTLE LEGACY</span><span class="record-dot" aria-hidden="true"></span></div>
+            <div class="record-stats">
+              <div><span>BEST CLEAR</span><strong id="best-time">—</strong></div>
+              <div><span>FIELDS CLEARED</span><strong id="games-won">0</strong></div>
+            </div>
+            <p class="record-caption" id="record-caption">Saved on this device.</p>
+          </section>
+
+          <section class="style-card" aria-labelledby="style-heading">
+            <div class="card-overline"><span id="style-heading">MAKE IT YOURS</span><span class="style-flower" aria-hidden="true">✿</span></div>
+            <div class="style-option"><span><b>Color world</b><small>Pick your atmosphere</small></span><span class="style-select-wrap" id="theme-name">Paprika</span></div>
+            <div class="theme-swatches" role="group" aria-label="Color theme">
+              <button class="theme-swatch is-active" type="button" data-theme-choice="paprika" aria-label="Paprika theme" aria-pressed="true"><span></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="midnight" aria-label="Midnight theme" aria-pressed="false"><span></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="matcha" aria-label="Matcha theme" aria-pressed="false"><span></span></button>
+              <button class="theme-swatch" type="button" data-theme-choice="peach" aria-label="Peach arcade theme" aria-pressed="false"><span></span></button>
+            </div>
+            <p class="style-note" id="style-note">A little warm, a little wild.</p>
+          </section>
+        </aside>
       </section>
+
+      <footer class="page-footer"><span>MAKE A GUESS. TRUST THE NUMBERS.</span><span>BUILT FOR ONE MORE ROUND <b>✳</b></span></footer>
     </main>
   </body>
 </html>
