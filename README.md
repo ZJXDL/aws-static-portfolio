@@ -45,7 +45,7 @@ The bucket has all S3 Block Public Access settings enabled. CloudFront is the on
 ├── .github/workflows/deploy.yml   # Publish site on pushes to main
 ├── docs/                          # OIDC trust and deploy policy examples
 ├── infra/                         # OpenTofu configuration
-└── site/                          # HTML, CSS, and JavaScript files
+└── site/                          # HTML and CSS for the website
 ```
 
 ## Prerequisites
@@ -61,7 +61,7 @@ The infrastructure creates an S3 bucket and a CloudFront distribution. A small p
 
 Edit `site/index.html` to add another project or expand this case study with your own implementation details. Keep the website project-focused; no personal profile information is required.
 
-Keep the `site/` directory as the deployment root. The workflow publishes only files in that directory.
+Keep the `site/` directory as the deployment root. The workflow publishes only files in that directory. This site uses plain HTML and CSS, so it does not need a build step or package installation.
 
 ## 2. Create the AWS infrastructure
 
