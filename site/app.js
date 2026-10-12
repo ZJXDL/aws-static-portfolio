@@ -44,7 +44,6 @@ const modeContent = {
 };
 
 const boardElement = document.querySelector("#board");
-const boardScroll = document.querySelector("#board-scroll");
 const difficultyElement = document.querySelector("#difficulty");
 const difficultyWrap = document.querySelector("#difficulty-wrap");
 const leftLabel = document.querySelector("#left-label");
@@ -198,7 +197,8 @@ function updateModeInterface() {
 
 function buildBoard() {
   boardElement.replaceChildren();
-  boardElement.style.gridTemplateColumns = "repeat(" + game.columns + ", var(--tile))";
+  boardElement.classList.remove("cols-8", "cols-9", "cols-10", "cols-12", "cols-16", "cols-30");
+  boardElement.classList.add("cols-" + game.columns);
   boardElement.setAttribute("aria-label", game.rows + " rows by " + game.columns + " columns");
   boardSize.textContent = game.columns + " × " + game.rows;
   game.cells = [];
@@ -590,16 +590,13 @@ function setFlagMode(enabled, announce) {
 
 function launchConfetti() {
   confetti.replaceChildren();
-  const colors = ["#D89151", "#77906E", "#F0C893", "#A8B99F", "#A44138", "#F4EADB"];
   for (let index = 0; index < 32; index += 1) {
     const piece = document.createElement("i");
-    piece.style.setProperty("--x", Math.floor(Math.random() * 100) + "%");
-    piece.style.setProperty("--c", colors[index % colors.length]);
-    piece.style.setProperty("--delay", (Math.random() * .6) + "s");
-    piece.style.setProperty("--dur", (1.5 + Math.random() * 1.2) + "s");
-    piece.style.setProperty("--rot", Math.floor(Math.random() * 160) + "deg");
+    piece.className = "confetti-piece piece-" + (index % 12);
     confetti.append(piece);
   }
+  confetti.classList.remove("is-active");
+  window.requestAnimationFrame(() => confetti.classList.add("is-active"));
 }
 
 function showToast(message) {
