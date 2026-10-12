@@ -1,10 +1,10 @@
-# Minefield on AWS
+# AWS Static Website Case Study
 
-A Minesweeper game hosted from a **private S3 bucket** and delivered through **Amazon CloudFront**. The live site is for playing; this repository documents the cloud design and contains the infrastructure code. OpenTofu creates the AWS resources. GitHub Actions deploys site changes through OIDC, using short-lived AWS credentials instead of stored access keys.
+A small, production-minded cloud project log hosted from a **private S3 bucket** and delivered through **Amazon CloudFront**. OpenTofu creates the AWS resources. GitHub Actions deploys site changes through OIDC, using short-lived AWS credentials instead of stored access keys.
 
 > The source repository is public at [github.com/ZJXDL/aws-static-portfolio](https://github.com/ZJXDL/aws-static-portfolio). A successful workflow run verified the automatic deployment.
 
-> The live page is the game. Its source and AWS infrastructure are documented here.
+> The live page describes the deployed AWS project and contains no personal profile or CV details. Add other projects to `site/index.html` as they are built.
 
 ## Current deployment
 
@@ -13,7 +13,7 @@ A Minesweeper game hosted from a **private S3 bucket** and delivered through **A
 - CloudFront distribution: `E2HQKB0TMNBJ3K`
 - AWS region for the bucket: `us-east-1`
 
-The static site is deployed. The game runs in the browser and keeps personal bests on the current device.
+The infrastructure is deployed and the current `site/` files have been uploaded. The page is project-focused and does not require personal details.
 
 ## What this demonstrates
 
@@ -45,7 +45,7 @@ The bucket has all S3 Block Public Access settings enabled. CloudFront is the on
 ├── .github/workflows/deploy.yml   # Publish site on pushes to main
 ├── docs/                          # OIDC trust and deploy policy examples
 ├── infra/                         # OpenTofu configuration
-└── site/                          # HTML, CSS, and JavaScript game
+└── site/                          # HTML and CSS for the website
 ```
 
 ## Prerequisites
@@ -55,15 +55,13 @@ The bucket has all S3 Block Public Access settings enabled. CloudFront is the on
 - AWS CLI configured locally for the account where you want to create the resources.
 - A GitHub repository for this project.
 
-The infrastructure creates an S3 bucket and a CloudFront distribution. A low-traffic static game will usually have low usage, but AWS charges depend on account plan, visitor geography, request count, and data transferred. Estimate your own usage with the [AWS Pricing Calculator](https://calculator.aws/) and current [CloudFront](https://aws.amazon.com/cloudfront/pricing/) and [S3](https://aws.amazon.com/s3/pricing/) pricing, and set a budget alert before deploying. This project deliberately uses the lower-cost `PriceClass_100` edge location set. No custom domain or paid certificate is required. S3 versioning retains previous object versions for rollback; the lifecycle rule expires noncurrent versions after 30 days.
+The infrastructure creates an S3 bucket and a CloudFront distribution. A small portfolio will usually have low usage, but AWS charges depend on account plan, visitor geography, request count, and data transferred. Estimate your own usage with the [AWS Pricing Calculator](https://calculator.aws/) and current [CloudFront](https://aws.amazon.com/cloudfront/pricing/) and [S3](https://aws.amazon.com/s3/pricing/) pricing, and set a budget alert before deploying. This project deliberately uses the lower-cost `PriceClass_100` edge location set. No custom domain or paid certificate is required. S3 versioning retains previous object versions for rollback; the lifecycle rule expires noncurrent versions after 30 days.
 
-## 1. Play and customize the game
+## 1. Extend the case study
 
-The game uses plain HTML, CSS, and JavaScript. `site/app.js` contains the classic Minesweeper rules, `site/styles.css` controls the visual design, and `site/index.html` defines the accessible page structure. Choose Easy (9 × 9, 10 mines), Medium (16 × 16, 40 mines), or Expert (16 × 30, 99 mines). The first opened square and its neighbors are safe. Players can flag with a right-click, keyboard shortcut, or touch-friendly flag mode. Personal bests stay in the visitor's browser.
+Edit `site/index.html` to add another project or expand this case study with your own implementation details. Keep the website project-focused; no personal profile information is required.
 
-There are no accounts or worldwide scores in the deployed app. A real leaderboard needs authenticated score submission and server-side run verification; accepting a time sent only by browser JavaScript would make rankings easy to forge. The planned account and score design is in [`docs/PRODUCT-DESIGN.md`](docs/PRODUCT-DESIGN.md). No leaderboard is shown until it can display real, validated scores.
-
-Keep the `site/` directory as the deployment root. The workflow publishes only files in that directory. There is no build step or package installation.
+Keep the `site/` directory as the deployment root. The workflow publishes only files in that directory. This site uses plain HTML and CSS, so it does not need a build step or package installation.
 
 ## 2. Create the AWS infrastructure
 
