@@ -3,49 +3,56 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A thoughtful little game of Minesweeper. Pick a difficulty, read the clues, and clear the board.">
-    <meta name="theme-color" content="#f4ead8">
-    <title>Minefield — A Cloud Engineering Project</title>
+    <meta name="description" content="A clean, classic game of Minesweeper.">
+    <meta name="theme-color" content="#f7f1e7">
+    <title>Minesweeper</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#game">Skip to the game</a>
-    <header class="site-header">
-      <a class="wordmark" href="#top" aria-label="Minefield, back to top">
+    <a class="skip-link" href="#game">Skip to game</a>
+    <header class="site-header" id="top">
+      <a class="wordmark" href="#top" aria-label="Minefield home">
         <span class="wordmark-mark" aria-hidden="true">✳</span>
-        <span>FIELD STUDY <i>01</i></span>
+        <span>MINEFIELD</span>
       </a>
-      <span class="header-note">A SMALL GAME ABOUT PAYING ATTENTION</span>
-      <a class="source-link" href="https://github.com/ZJXDL/aws-static-portfolio" target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a>
+      <span class="header-tag">CLASSIC</span>
     </header>
 
-    <main id="top">
-      <section class="intro" aria-labelledby="page-title">
-        <div>
-          <p class="eyebrow"><span></span> MINESWEEPER · MADE FOR THE BROWSER</p>
-          <h1 id="page-title">A little game of<br><em>calculated risk.</em></h1>
-        </div>
-        <p class="intro-copy">Clear the field one square at a time. The numbers tell you how close the mines are. Take your time; the first square is always safe.</p>
-      </section>
-
-      <section class="game-layout" id="game" aria-label="Minesweeper">
-        <div class="game-main">
+    <main>
+      <section class="game-shell" id="game" aria-labelledby="page-title">
+        <div class="game-heading">
+          <div class="title-group">
+            <p class="eyebrow">THE CLASSIC</p>
+            <h1 id="page-title">Minesweeper<span aria-hidden="true">.</span></h1>
+          </div>
           <div class="game-toolbar">
-            <label class="difficulty-label" for="difficulty">FIELD SIZE
+            <label class="level-select" for="difficulty">
+              <span>BOARD</span>
               <select id="difficulty" name="difficulty">
-                <option value="beginner">Small · 9 × 9</option>
-                <option value="intermediate">Medium · 16 × 16</option>
-                <option value="expert">Large · 16 × 30</option>
+                <option value="beginner">Beginner · 9 × 9</option>
+                <option value="intermediate">Intermediate · 16 × 16</option>
+                <option value="expert">Expert · 16 × 30</option>
               </select>
             </label>
-            <button class="new-game" id="new-game" type="button"><span aria-hidden="true">↻</span> New game</button>
+            <button class="new-game" id="new-game" type="button">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 8A6.5 6.5 0 0 0 4.7 5.7L3 7.4M3 3.8v3.7h3.7M3.8 12a6.5 6.5 0 0 0 11.5 2.3L17 12.6m0 3.6v-3.7h-3.7"/></svg>
+              <span>New game</span>
+            </button>
           </div>
+        </div>
 
+        <div class="game-card">
           <div class="scorebar" aria-label="Game status">
-            <div class="score"><span>MINES LEFT</span><strong id="mine-count">010</strong></div>
-            <div class="face-wrap"><button class="face-button" id="face-button" type="button" aria-label="Start a new game">☺</button></div>
-            <div class="score score-time"><span>TIME</span><strong id="timer">000</strong></div>
+            <div class="score">
+              <span>MINES</span>
+              <strong id="mine-count">010</strong>
+            </div>
+            <button class="face-button" id="face-button" type="button" aria-label="Start a new game">☺</button>
+            <div class="score score-time">
+              <span>TIME</span>
+              <strong id="timer">000</strong>
+            </div>
           </div>
 
           <div class="board-frame">
@@ -53,39 +60,17 @@
               <div class="board" id="board" role="group" aria-label="Minesweeper board"></div>
             </div>
           </div>
-          <div class="game-message" id="game-message" role="status" aria-live="polite">Choose a square to begin.</div>
-          <div class="game-controls">
-            <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false"><span aria-hidden="true">⚑</span> Flag mode <kbd>F</kbd></button>
-            <p>Reveal: click or tap <span>·</span> Flag: right-click or use flag mode</p>
+
+          <div class="game-bottom">
+            <div class="game-message" id="game-message" role="status" aria-live="polite">Tap a tile to begin.</div>
+            <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 17V3m.5.5h9l-2.2 3 2.2 3h-9"/></svg>
+              <span>Flag</span>
+              <kbd>F</kbd>
+            </button>
           </div>
-        </div>
-
-        <aside class="side-notes">
-          <div class="note-heading"><span class="note-number">01</span><span>HOW TO PLAY</span></div>
-          <h2>Read the field.</h2>
-          <p>Each number counts the mines in the eight squares around it. Use those clues to decide what’s safe.</p>
-          <ol class="rules-list">
-            <li><span>01</span><p><strong>Open a square.</strong> The first move is guaranteed safe, with a clear space around it.</p></li>
-            <li><span>02</span><p><strong>Follow the numbers.</strong> A <b>1</b> touches one mine; a <b>2</b> touches two.</p></li>
-            <li><span>03</span><p><strong>Mark the danger.</strong> Flag suspected mines, then open every safe square to win.</p></li>
-          </ol>
-          <div class="best-note"><span aria-hidden="true">✳</span><p>No rush. The timer starts on your first move.</p></div>
-        </aside>
-      </section>
-
-      <section class="project-note" aria-label="About the cloud project">
-        <div class="project-note-mark" aria-hidden="true">↗</div>
-        <div>
-          <p class="eyebrow">BEHIND THE GAME</p>
-          <p>This game is a static website hosted on AWS. CloudFront serves it over HTTPS from a private S3 bucket; OpenTofu defines the infrastructure, and GitHub Actions publishes updates.</p>
-          <details>
-            <summary>How the site is deployed</summary>
-            <p>A push to <code>main</code> starts a GitHub Actions workflow. AWS verifies the workflow with OIDC and grants temporary, limited credentials to upload the site and clear the CloudFront cache. The workflow cannot change the AWS infrastructure.</p>
-          </details>
         </div>
       </section>
     </main>
-
-    <footer class="site-footer"><span>FIELD STUDY 01 <i>·</i> CLOUD ENGINEERING</span><span>Built with HTML, CSS, JavaScript, AWS, and OpenTofu</span></footer>
   </body>
 </html>

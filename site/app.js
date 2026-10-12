@@ -60,7 +60,7 @@ function createGame() {
   flagToggle.setAttribute("aria-pressed", "false");
   mineCountElement.textContent = formatCounter(game.mines);
   timerElement.textContent = "000";
-  messageElement.textContent = "Choose a square to begin.";
+  messageElement.textContent = "Tap a tile to begin.";
   faceButton.textContent = "☺";
   faceButton.setAttribute("aria-label", "Start a new game");
   faceButton.classList.remove("is-happy", "is-sad");
@@ -196,7 +196,7 @@ function finishGame(won) {
   if (game.timerId) window.clearInterval(game.timerId);
 
   if (won) {
-    messageElement.textContent = "Field cleared. Nicely done.";
+    messageElement.textContent = "Board cleared!";
     faceButton.textContent = "✓";
     faceButton.setAttribute("aria-label", "You won. Start a new game");
     faceButton.classList.add("is-happy");
@@ -206,7 +206,7 @@ function finishGame(won) {
       else if (cell.flagged) cell.wrong = true;
       renderCell(index);
     });
-    messageElement.textContent = "A mine. The field got you this time.";
+    messageElement.textContent = "Mine hit.";
     faceButton.textContent = "×";
     faceButton.setAttribute("aria-label", "Game over. Start a new game");
     faceButton.classList.add("is-sad");
@@ -217,7 +217,7 @@ function setFlagMode(enabled) {
   if (game.over) return;
   game.flagMode = enabled;
   flagToggle.setAttribute("aria-pressed", String(enabled));
-  messageElement.textContent = enabled ? "Flag mode on. Choose a square to mark it." : "Flag mode off. Choose a square to reveal it.";
+  messageElement.textContent = enabled ? "Flag mode on." : "Flag mode off.";
 }
 
 boardElement.addEventListener("click", (event) => {
