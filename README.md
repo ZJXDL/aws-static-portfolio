@@ -1,71 +1,71 @@
-# Minefield
+# AWS Static Site Delivery with OpenTofu
 
-A classic Minesweeper game built with plain HTML, CSS, and JavaScript, and hosted on AWS. Choose a board, reveal safe squares, and flag the mines.
+A static Minesweeper site deployed on AWS. The project focuses on the cloud infrastructure and delivery path: OpenTofu provisions a private Amazon S3 origin and Amazon CloudFront distribution, while GitHub Actions deploys site updates using GitHub OIDC and short-lived AWS credentials.
 
-**[Play Minefield](https://d1650g44zju5p7.cloudfront.net)**
-
-## The game
-
-- Three classic boards: Beginner (9 × 9, 10 mines), Intermediate (16 × 16, 40 mines), and Expert (16 × 30, 99 mines).
-- The first square and its neighbors are safe. Empty areas open automatically.
-- Flag a square with the flag control, the `F` key, or right-click.
-- Use the arrow keys to move around the board. Board controls include accessible labels for assistive technology.
-- Timer, remaining-mine counter, and quick restart.
-
-The game runs entirely in the browser. It has no account system, backend API, or external JavaScript dependencies.
+**[View the deployed site](https://d1650g44zju5p7.cloudfront.net)**
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-  Player[Player] -->|HTTPS| CF[Amazon CloudFront]
-  CF -->|Origin Access Control| S3[(Private Amazon S3 bucket)]
-  GH[GitHub Actions] -->|OIDC short-lived credentials| IAM[Scoped IAM role]
-  IAM -->|Upload site and invalidate cache| S3
-  IAM --> CF
-  Tofu[OpenTofu] -->|Provisions infrastructure| AWS[AWS]
+  Visitor[Visitor] -->|HTTPS| CF[Amazon CloudFront]
+  CF -->|Signed origin request| OAC[Origin Access Control]
+  OAC -->|s3:GetObject| S3[(Private Amazon S3 bucket)]
+
+  GH[GitHub Actions] -->|OIDC token| IAM[AWS IAM deploy role]
+  IAM -->|Sync site files| S3
+  IAM -->|Invalidate cache| CF
+
+  Operator[Infrastructure changes] -->|OpenTofu| AWS[AWS account]
 ```
 
-OpenTofu provisions the S3 bucket, CloudFront distribution, origin access control, bucket policy, and response security headers. The bucket blocks public access; CloudFront is allowed to read objects through its distribution-specific policy. Visitors use HTTPS through CloudFront.
+## AWS design
 
-GitHub Actions publishes changes to `site/`. The workflow authenticates to AWS through GitHub's OIDC provider and a narrowly scoped IAM role, so the repository does not need long-lived AWS access keys. It syncs the site files to S3 and invalidates the CloudFront cache.
+- **Private S3 origin:** S3 Block Public Access is enabled, ACLs are disabled through bucket ownership controls, and the bucket policy grants object reads only to this CloudFront distribution.
+- **CloudFront with OAC:** Visitors access the site through CloudFront over HTTPS. CloudFront signs requests to the S3 REST origin with SigV4; the S3 website endpoint is not used.
+- **Delivery security:** The distribution redirects HTTP to HTTPS, requires TLS 1.2 or newer, compresses responses, and attaches a response headers policy for browser security headers.
+- **Storage safeguards:** S3 default encryption and versioning are enabled. A lifecycle rule expires noncurrent object versions after 30 days.
+- **Workload identity for CI/CD:** GitHub Actions assumes a dedicated IAM role through OIDC. The role trust is restricted to this repository and branch, and its permissions cover publishing site files and invalidating this distribution. No long-lived AWS access keys are stored in GitHub.
+- **Infrastructure as code:** OpenTofu defines the S3 bucket, CloudFront distribution, OAC, bucket policy, response headers policy, and outputs.
 
-See [the architecture notes](docs/ARCHITECTURE.md) for request flow, deployment details, and design tradeoffs.
+## Deployment flow
 
-## Run locally
+1. A push to `main` that changes `site/` starts the GitHub Actions workflow. It can also be started manually.
+2. GitHub Actions requests an OIDC token. AWS validates its audience and repository/branch claims against the IAM role trust policy, then issues temporary credentials.
+3. The workflow synchronizes `site/` to the bucket and requests a CloudFront invalidation.
 
-Serve the `site/` directory with any static web server. For example:
+The IAM OIDC provider and deploy role are configured separately from the OpenTofu stack. Example trust and permission policies are in `docs/`; review their repository and AWS identifiers before adapting them.
+
+The workflow uses these GitHub repository variables:
+
+| Variable | Purpose |
+| --- | --- |
+| `AWS_ROLE_ARN` | IAM role assumed through OIDC |
+| `AWS_REGION` | Region for the S3 bucket |
+| `SITE_BUCKET` | Destination bucket for site files |
+| `CLOUDFRONT_DISTRIBUTION_ID` | Distribution whose cache is invalidated |
+
+## Infrastructure lifecycle
+
+OpenTofu configuration is in `infra/`. To review or apply it, run from that directory:
 
 ```sh
-python3 -m http.server 8000 --directory site
+tofu init
+tofu plan
+tofu apply
 ```
 
-Then open `http://localhost:8000`.
+The current state file is local and excluded by `.gitignore`; protect it as sensitive infrastructure data. A team deployment should use a remote backend with encryption, locking, and access controls. The S3 bucket name includes the AWS account ID to keep it unique.
+
+The stack creates billable AWS resources. The CloudFront distribution uses `PriceClass_100`, the default CloudFront certificate, and no custom domain. The bucket is dedicated to this site, and `force_destroy` is enabled for teardown; do not store unrelated files in it.
 
 ## Repository layout
 
 ```text
-site/                    Game interface and browser logic
 infra/                   OpenTofu AWS configuration
-docs/                    Architecture notes and GitHub OIDC policy examples
+site/                    Static Minesweeper application
+docs/                    Architecture notes and OIDC policy examples
 .github/workflows/       GitHub Actions deployment workflow
 ```
 
-## Infrastructure and deployment
-
-The AWS stack is managed from `infra/` with OpenTofu. Review `infra/variables.tf` before applying; the configuration creates billable AWS resources. The bucket name is derived from the project name and AWS account ID.
-
-The deployment workflow runs on pushes to `main` that change `site/` or the workflow file. It can also be started manually in GitHub Actions. It expects these GitHub repository variables:
-
-| Variable | Purpose |
-| --- | --- |
-| `AWS_ROLE_ARN` | IAM role the workflow assumes through OIDC |
-| `AWS_REGION` | Region used for the S3 bucket |
-| `SITE_BUCKET` | Destination bucket for the site files |
-| `CLOUDFRONT_DISTRIBUTION_ID` | Distribution whose cache is invalidated |
-
-The example OIDC policy documents in `docs/` are scoped to this repository's deployment. Review and update the repository and AWS identifiers before reusing them elsewhere.
-
-## Scope
-
-This is a static, single-player implementation. Scores are not submitted to a server, and there is no global leaderboard or account system. The infrastructure demonstrates static content delivery and an automated AWS deployment workflow; it does not include an application backend.
+The application is a static, single-player browser game. It has no backend, database, user accounts, or shared leaderboard; the AWS implementation demonstrates infrastructure as code, private origin delivery, and identity-based CI/CD for a static workload.
