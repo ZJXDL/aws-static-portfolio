@@ -3,150 +3,118 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Minefield is a playful Minesweeper with Classic, Daily, Expedition, and Blitz modes.">
-    <meta name="theme-color" content="#f2ead8">
-    <title>Minefield — Find your way through</title>
+    <meta name="description" content="A clean, classic game of Minesweeper. Choose a board, read the clues, and see how quickly you can clear the field.">
+    <meta name="theme-color" content="#081727">
+    <title>Minefield — Classic Minesweeper</title>
     <link rel="stylesheet" href="/styles.css">
     <script src="/app.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#board">Skip to the board</a>
-    <div class="page-wash" aria-hidden="true"></div>
-    <header class="topbar" id="top">
-      <a class="brand" href="#top" aria-label="Minefield home">
-        <span class="brand-glyph" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-        <span class="brand-name">MINEFIELD</span>
-        <span class="brand-edition">FIELD NOTES <b>01</b></span>
+
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Minefield home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span>MINEFIELD</span>
       </a>
-      <div class="top-actions">
-        <button class="icon-button sound-button" id="sound-toggle" type="button" aria-pressed="false" aria-label="Turn sound on">
-          <svg class="sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="M16 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>
-          <svg class="sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4Z"/><path d="m17 9 5 6m0-6-5 6"/></svg>
-        </button>
-        <button class="icon-button help-button" id="help-open" type="button" aria-label="How to play">?</button>
+      <div class="header-actions">
+        <span class="status-pill"><span class="status-dot" aria-hidden="true"></span> <span id="live-state">READY TO PLAY</span></span>
+        <button class="help-button" id="help-open" type="button" aria-label="How to play">?</button>
       </div>
     </header>
 
     <main class="app-shell">
-      <section class="game-heading">
-        <div class="title-lockup">
-          <p class="overline"><span class="live-dot"></span> PICK A FIELD · MAKE YOUR MOVE</p>
-          <h1>Mine<span>field</span><sup>✳</sup></h1>
+      <section class="game-intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> CLASSIC MINESWEEPER</p>
+          <h1 id="page-title">Find the <span>safe way.</span></h1>
         </div>
-        <p class="heading-aside">Read the clues.<br>Trust your instincts.</p>
+        <p class="intro-note">One board. Three sizes.<br>Make every move count.</p>
       </section>
 
-      <nav class="mode-picker" aria-label="Choose a game mode">
-        <button class="mode-tab is-active" type="button" data-mode="classic" aria-pressed="true">
-          <span class="mode-glyph glyph-classic" aria-hidden="true">▦</span><span class="mode-copy"><strong>Classic</strong><small>THE ORIGINAL</small></span><span class="mode-key">01</span>
-        </button>
-        <button class="mode-tab" type="button" data-mode="daily" aria-pressed="false">
-          <span class="mode-glyph glyph-daily" aria-hidden="true">◷</span><span class="mode-copy"><strong>Daily</strong><small>ONE SHARED FIELD</small></span><span class="mode-key">02</span>
-        </button>
-        <button class="mode-tab" type="button" data-mode="expedition" aria-pressed="false">
-          <span class="mode-glyph glyph-expedition" aria-hidden="true">⌁</span><span class="mode-copy"><strong>Expedition</strong><small>THREE STAGES · 3 LIVES</small></span><span class="mode-key">03</span>
-        </button>
-        <button class="mode-tab" type="button" data-mode="blitz" aria-pressed="false">
-          <span class="mode-glyph glyph-blitz" aria-hidden="true">ϟ</span><span class="mode-copy"><strong>Blitz</strong><small>60 SECONDS · 3 LIVES</small></span><span class="mode-key">04</span>
-        </button>
-      </nav>
+      <section class="game-card" aria-label="Minesweeper">
+        <div class="game-toolbar">
+          <fieldset class="size-picker">
+            <legend>BOARD SIZE</legend>
+            <div class="size-options">
+              <button class="size-option is-selected" type="button" data-level="beginner" aria-pressed="true">
+                <span class="size-name">Easy</span><span class="size-detail">9 × 9</span>
+              </button>
+              <button class="size-option" type="button" data-level="intermediate" aria-pressed="false">
+                <span class="size-name">Medium</span><span class="size-detail">16 × 16</span>
+              </button>
+              <button class="size-option" type="button" data-level="expert" aria-pressed="false">
+                <span class="size-name">Expert</span><span class="size-detail">16 × 30</span>
+              </button>
+            </div>
+          </fieldset>
+          <button class="new-game-button" id="new-game" type="button">
+            <span class="new-game-icon" aria-hidden="true">↻</span>
+            <span>New game</span>
+          </button>
+        </div>
 
-      <section class="play-area" aria-label="Game">
-        <div class="game-column">
-          <div class="game-topline">
-            <label class="difficulty-wrap" id="difficulty-wrap">FIELD SIZE
-              <select id="difficulty" aria-label="Choose classic field size">
-                <option value="beginner">Small · 9 × 9</option>
-                <option value="intermediate">Medium · 16 × 16</option>
-                <option value="expert">Large · 16 × 30</option>
-              </select>
-            </label>
-            <div class="board-caption"><span class="caption-dot"></span><span id="mode-caption">CLASSIC FIELD</span></div>
-            <button class="new-game" id="new-game" type="button"><span aria-hidden="true">↻</span> <b>New field</b></button>
+        <div class="game-status">
+          <div class="counter" role="group" aria-label="Mines remaining">
+            <span class="counter-label">MINES</span>
+            <strong class="digital-display" id="mine-count">010</strong>
           </div>
 
-          <div class="console">
-            <div class="hud">
-              <div class="hud-stat"><span id="left-label">MINES</span><strong id="left-value">010</strong></div>
-              <button class="face-button" id="face-button" type="button" aria-label="Start a new field">☺</button>
-              <div class="hud-stat hud-stat-right"><span id="right-label">TIME</span><strong id="right-value">000</strong></div>
-            </div>
-            <div class="status-line">
-              <span class="status-lamp" aria-hidden="true"></span>
-              <p id="game-message" role="status" aria-live="polite">The first move is always safe.</p>
-              <span class="daily-stamp" id="daily-stamp" hidden></span>
-            </div>
-            <div class="board-frame">
-              <div class="board-scroll" id="board-scroll">
-                <div class="board" id="board" role="group" aria-label="Minesweeper board"></div>
-                <div class="result-overlay" id="result-overlay" hidden>
-                  <div class="result-card">
-                    <span class="result-symbol" id="result-symbol" aria-hidden="true">✳</span>
-                    <p class="result-kicker" id="result-kicker">FIELD CLEARED</p>
-                    <h2 id="result-title">Nicely done.</h2>
-                    <p id="result-copy">That was a clean run.</p>
-                    <button class="result-button" id="result-again" type="button">Take another run <span aria-hidden="true">↗</span></button>
-                    <button class="share-button" id="share-result" type="button">Copy result</button>
-                  </div>
-                  <div class="confetti" id="confetti" aria-hidden="true"></div>
-                </div>
-              </div>
-            </div>
-            <div class="board-tools">
-              <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false"><span aria-hidden="true">⚑</span><b>Flag mode</b><kbd>F</kbd></button>
-              <p><span class="desktop-hint">Click to reveal <i>·</i> right-click to flag</span><span class="mobile-hint">Tap to reveal <i>·</i> flag mode to mark</span></p>
-              <span class="board-size" id="board-size">9 × 9</span>
-            </div>
+          <button class="face-button" id="face-button" type="button" aria-label="Start a new game">
+            <span aria-hidden="true">↻</span>
+          </button>
+
+          <div class="counter counter-time" role="group" aria-label="Elapsed time">
+            <span class="counter-label">TIME</span>
+            <strong class="digital-display" id="timer">000</strong>
           </div>
         </div>
 
-        <aside class="side-panel" aria-label="Run details">
-      <div class="mission-head">
-            <span class="panel-overline" id="mission-overline">YOUR FIELD</span>
-            <span class="panel-pin" aria-hidden="true">✳</span>
+        <div class="game-message" id="game-message" role="status" aria-live="polite">
+          <span class="message-indicator" aria-hidden="true"></span>
+          <span id="message-text">Your first move is always safe.</span>
+          <span class="current-best">BEST <strong id="best-time">—</strong></span>
+        </div>
+
+        <div class="board-viewport" id="board-viewport">
+          <div class="board" id="board" role="grid" aria-label="Minesweeper board"></div>
+          <section class="result-panel" id="result-panel" aria-live="polite" aria-labelledby="result-title" hidden>
+            <div class="result-icon" id="result-icon" aria-hidden="true">✦</div>
+            <p class="result-eyebrow" id="result-eyebrow">FIELD CLEARED</p>
+            <h2 id="result-title">Nicely done.</h2>
+            <p class="result-copy" id="result-copy">You found a safe way through.</p>
+            <button class="result-button" id="result-again" type="button">Play again <span aria-hidden="true">↗</span></button>
+          </section>
+        </div>
+
+        <div class="board-footer">
+          <div class="board-meta">
+            <span class="board-size-readout" id="board-size">9 × 9</span>
+            <span class="meta-separator" aria-hidden="true"></span>
+            <span id="mine-total">10 mines</span>
           </div>
-          <h2 id="mission-title">Take it one square at a time.</h2>
-          <p class="mission-copy" id="mission-copy">Numbers count nearby mines. Open every safe square to clear the field.</p>
-          <div class="panel-rule"></div>
-          <div class="run-stat" id="lives-wrap" hidden>
-            <span id="lives-label">LIVES</span>
-            <strong class="hearts" id="lives-value" aria-label="3 lives remaining">♥ ♥ ♥</strong>
+          <div class="board-actions">
+            <button class="flag-toggle" id="flag-toggle" type="button" aria-pressed="false">
+              <span class="flag-symbol" aria-hidden="true">⚑</span>
+              <span id="flag-label">Flag mode</span>
+              <kbd>F</kbd>
+            </button>
+            <span class="input-hint"><span class="desktop-hint">Left click reveal · right click flag</span><span class="mobile-hint">Tap reveal · flag mode to mark</span></span>
           </div>
-          <div class="run-stat" id="stage-wrap" hidden>
-            <span>EXPEDITION</span>
-            <strong id="stage-value">01 <i>/ 03</i></strong>
-          </div>
-          <div class="run-stat best-stat">
-            <span id="best-label">BEST TIME</span>
-            <strong id="best-value">— — : — —</strong>
-          </div>
-          <div class="daily-note" id="daily-note" hidden>
-            <span class="daily-flower" aria-hidden="true">✳</span>
-            <p>Same field for everyone.<br><strong>New one at midnight UTC.</strong></p>
-          </div>
-          <div class="panel-bottom">
-            <span class="tiny-star" aria-hidden="true">✳</span>
-            <p id="mode-tip">A number tells you how many mines touch that square.</p>
-          </div>
-        </aside>
+        </div>
       </section>
 
-      <footer class="app-footer">
-        <span>USE <kbd>F</kbd> TO SWITCH TO FLAG MODE</span>
-        <span>MADE FOR A MOMENT BETWEEN THINGS <i>✳</i></span>
-      </footer>
     </main>
 
     <dialog class="help-dialog" id="help-dialog" aria-labelledby="help-title">
-      <button class="dialog-close" type="button" aria-label="Close help">×</button>
-      <p class="overline"><span class="live-dot"></span> THE QUICK VERSION</p>
-      <h2 id="help-title">A few good clues<br>go a long way.</h2>
-      <div class="help-row"><span>01</span><p><strong>Open a square.</strong> The first move opens a safe patch of ground.</p></div>
-      <div class="help-row"><span>02</span><p><strong>Read the number.</strong> It counts mines in the eight squares touching it.</p></div>
-      <div class="help-row"><span>03</span><p><strong>Mark the danger.</strong> Right-click, or turn on Flag mode. On a keyboard, press <kbd>F</kbd>.</p></div>
-      <div class="help-row"><span>04</span><p><strong>Clear the field.</strong> Open all safe squares. Arrow keys move around the board.</p></div>
-      <p class="help-footer">Daily is one shared puzzle. Expedition is three fields, three lives. Blitz is a one-minute sprint.</p>
+      <button class="dialog-close" id="help-close" type="button" aria-label="Close instructions">×</button>
+      <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> HOW TO PLAY</p>
+      <h2 id="help-title">A little logic<br>goes a long way.</h2>
+      <div class="help-step"><span>1</span><p><strong>Open a square.</strong> The first one is always safe.</p></div>
+      <div class="help-step"><span>2</span><p><strong>Follow the numbers.</strong> Each number counts nearby mines. Click it when matching flags are in place to clear its other neighbors.</p></div>
+      <div class="help-step"><span>3</span><p><strong>Flag what you know.</strong> Right-click, tap Flag mode, or press F.</p></div>
+      <div class="help-step"><span>4</span><p><strong>Clear every safe square.</strong> Use arrow keys to move, then Enter to open.</p></div>
+      <p class="dialog-footnote">Choose Easy, Medium, or Expert before you begin. Your best time is saved on this device.</p>
     </dialog>
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
