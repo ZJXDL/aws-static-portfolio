@@ -3,253 +3,134 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A complete, plain-language and technical walkthrough of a private S3 website delivered by CloudFront, provisioned with OpenTofu, and deployed with GitHub Actions OIDC.">
-    <meta name="theme-color" content="#f3f1e9">
-    <title>Private S3 Website on CloudFront | Cloud Engineering Case Study</title>
+    <meta name="description" content="A cloud engineering case study: a private Amazon S3 website origin delivered by CloudFront, provisioned with OpenTofu, and published through GitHub Actions OIDC.">
+    <meta name="theme-color" content="#f4ead8">
+    <title>Private by Design — Cloud Engineering Case Study</title>
     <link rel="stylesheet" href="/styles.css">
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the project</a>
-    <header class="site-header">
-      <a class="brand" href="#top" aria-label="Field Notes Cloud, back to top">
-        <span class="brand-mark" aria-hidden="true">F</span>
-        <span>FIELD NOTES <i>/</i> CLOUD</span>
+    <header class="site-header" id="top">
+      <a class="wordmark" href="#top" aria-label="Cloud engineering project, back to top">
+        <span class="wordmark-icon" aria-hidden="true">∿</span>
+        <span>FIELD STUDY <i>01</i></span>
       </a>
       <nav aria-label="Project sections">
-        <a href="#overview">The idea</a>
-        <a href="#architecture">How it works</a>
-        <a href="#security">Security</a>
-        <a href="#operations">Operations</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#delivery">Delivery</a>
+        <a href="#engineering">Engineering notes</a>
       </nav>
-      <a class="header-link" href="https://github.com/ZJXDL/aws-static-portfolio">Source <span aria-hidden="true">↗</span></a>
+      <a class="source-link" href="https://github.com/ZJXDL/aws-static-portfolio" target="_blank" rel="noreferrer">Source code <span aria-hidden="true">↗</span></a>
     </header>
 
     <main id="main">
-      <section class="hero" id="top" aria-labelledby="hero-title">
+      <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> AWS · OPENTOFU · AUTOMATED DELIVERY</p>
-          <h1 id="hero-title">A website with a <em>private front door.</em></h1>
-          <p class="lede">A small website, built like a cloud system. Its files live in a private storage bucket. CloudFront delivers them securely to visitors. OpenTofu creates the infrastructure, and GitHub Actions updates the site.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#overview">Start with the short version <span aria-hidden="true">↓</span></a>
-            <a class="button button-quiet" href="https://github.com/ZJXDL/aws-static-portfolio">Explore the source code <span aria-hidden="true">↗</span></a>
+          <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span> AWS <b>·</b> OPENTOFU <b>·</b> GITHUB ACTIONS</p>
+          <h1 id="hero-title">Private by design.<br><em>Open to everyone.</em></h1>
+          <p class="hero-intro">A static website served around the world, while its files stay in a private S3 bucket. This project brings together cloud networking, access control, infrastructure as code, and automated delivery.</p>
+          <div class="hero-links">
+            <a class="button button-dark" href="#architecture">Explore the architecture <span aria-hidden="true">↓</span></a>
+            <span class="hero-meta">A hands-on AWS portfolio project<br>Designed, provisioned, and deployed with code</span>
           </div>
         </div>
-        <aside class="hero-facts" aria-label="Project facts">
-          <p class="fact-label">THE PROJECT, AT A GLANCE</p>
-          <div><span>WHAT</span><strong>Static website</strong></div>
-          <div><span>WHERE</span><strong>AWS · us-east-1 + global edge</strong></div>
-          <div><span>BUILT WITH</span><strong>OpenTofu 1.13.1 · GitHub Actions</strong></div>
-          <div><span>LIVE</span><a href="https://d1650g44zju5p7.cloudfront.net">Open the deployed site ↗</a></div>
-          <p class="resource-count"><strong>10</strong><span>AWS resources managed by OpenTofu</span></p>
+        <aside class="hero-art" aria-label="Project architecture overview">
+          <div class="art-topline"><span>REQUEST PATH</span><span>01 — 03</span></div>
+          <div class="art-node visitor-node"><span class="node-icon" aria-hidden="true">↗</span><div><small>THE READER</small><strong>Browser</strong></div></div>
+          <div class="art-connector"><span>HTTPS</span><i aria-hidden="true"></i></div>
+          <div class="art-node edge-node"><span class="node-icon" aria-hidden="true">◎</span><div><small>GLOBAL EDGE</small><strong>CloudFront</strong></div><span class="node-note">cache + TLS</span></div>
+          <div class="art-connector signed-connector"><span>OAC · SIGV4</span><i aria-hidden="true"></i></div>
+          <div class="art-node storage-node"><span class="node-icon" aria-hidden="true">▤</span><div><small>PRIVATE ORIGIN</small><strong>Amazon S3</strong></div><span class="lock-mark" aria-label="Private">⌑</span></div>
+          <div class="art-foot"><span>ONE CONTROLLED ENTRY POINT</span><span>01 / 03</span></div>
         </aside>
       </section>
 
-      <div class="reading-path" aria-label="Ways to explore the case study">
-        <span>Choose your path</span>
-        <a href="#plain-language">New to cloud? <b>Start here</b></a>
-        <a href="#architecture">Know the basics? <b>Follow a request</b></a>
-        <a href="#inventory">Reviewing the build? <b>See every resource</b></a>
-        <a href="#security">Interested in controls? <b>Review security</b></a>
-        <a href="#operations">Maintaining it? <b>See the runbook</b></a>
+      <div class="project-strip" aria-label="Project summary">
+        <div><span>THE PATTERN</span><strong>Private origin, public edge</strong></div>
+        <div><span>INFRASTRUCTURE</span><strong>10 AWS resources · OpenTofu</strong></div>
+        <div><span>DEPLOYMENT</span><strong>GitHub Actions · OIDC</strong></div>
+        <div><span>REGION</span><strong>us-east-1 + CloudFront edge</strong></div>
       </div>
 
-      <section class="section section-overview" id="overview" aria-labelledby="overview-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">01 / THE IDEA</p><h2 id="overview-title">What did I build?</h2></div>
-          <p class="heading-note">The short version, before the details.</p>
-        </div>
-        <div class="overview-layout">
-          <div class="prose intro-prose">
-            <p>This project puts a simple website on AWS without exposing its storage bucket to the public internet. Visitors connect to CloudFront, a content delivery network. CloudFront reads files from a private S3 bucket and sends them back over HTTPS.</p>
-            <p>The infrastructure is written as code with OpenTofu. A GitHub Actions workflow publishes website changes automatically. It uses OpenID Connect (OIDC) to receive temporary AWS credentials, so no permanent AWS access key is saved in GitHub.</p>
-            <p class="plain-summary"><strong>In one sentence:</strong> private storage, secure public delivery, repeatable infrastructure, and an automated update path.</p>
+      <section class="section architecture" id="architecture" aria-labelledby="architecture-title">
+        <div class="section-kicker"><span>01</span><span>THE SYSTEM</span></div>
+        <div class="section-content">
+          <div class="section-heading">
+            <div><p class="eyebrow">A SIMPLE SITE, A REAL CLOUD BOUNDARY</p><h2 id="architecture-title">One public door.<br><em>One private source.</em></h2></div>
+            <p class="section-lede">Visitors connect to CloudFront. The S3 bucket has no public access; only this CloudFront distribution can read the site files.</p>
           </div>
-          <aside class="analogy-card" id="plain-language">
-            <p class="eyebrow">A SIMPLE WAY TO PICTURE IT</p>
-            <h3>A library, a locked archive, and a courier</h3>
-            <p>Imagine the website files are books in a locked archive. The archive is S3. CloudFront is the library desk visitors can reach. It fetches a book from the archive only when it is allowed, then keeps a nearby copy ready for the next reader.</p>
-            <p>GitHub Actions is the delivery service that brings updated pages to the archive. AWS gives it a short-lived badge after checking which project and branch asked for access.</p>
-            <p class="analogy-footnote">The analogy helps with the big picture. The sections below describe the actual AWS controls and request flow.</p>
-          </aside>
-        </div>
-      </section>
-
-      <section class="section section-soft" aria-labelledby="why-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">THE DESIGN QUESTION</p><h2 id="why-title">Why not put the files on a public bucket?</h2></div>
-          <p class="heading-note">A simple site still deserves a clear boundary.</p>
-        </div>
-        <div class="answer-grid">
-          <article><span class="answer-number">01</span><h3>Keep storage private</h3><p>S3 is the source of the files, but visitors cannot browse the bucket directly. Public access is blocked at the bucket level.</p></article>
-          <article><span class="answer-number">02</span><h3>Make one controlled entrance</h3><p>CloudFront is the public entry point. It handles HTTPS, caching, compression, and browser security headers.</p></article>
-          <article><span class="answer-number">03</span><h3>Let only that entrance read</h3><p>Origin Access Control signs CloudFront’s request. A bucket policy checks that it came from this exact distribution.</p></article>
-        </div>
-      </section>
-
-      <section class="section" id="architecture" aria-labelledby="architecture-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">02 / A VISITOR OPENS THE SITE</p><h2 id="architecture-title">Follow one page request</h2></div>
-          <p class="heading-note">This is the path from a browser to an HTML file and back.</p>
-        </div>
-        <div class="flow-diagram" role="group" aria-label="A visitor connects over HTTPS to CloudFront. CloudFront checks its cache, then uses Origin Access Control to read a file from the private S3 bucket if needed.">
-          <article class="flow-step"><span class="step-index">01</span><span class="step-type">THE READER</span><h3>Browser</h3><p>Requests the website over HTTPS.</p></article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step"><span class="step-index">02</span><span class="step-type">THE FRONT DOOR</span><h3>CloudFront</h3><p>Checks for a nearby cached copy. Handles TLS and response headers.</p></article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step"><span class="step-index">03</span><span class="step-type">THE SIGNED PASS</span><h3>OAC</h3><p>Signs requests from CloudFront to S3 using AWS Signature Version 4.</p></article>
-          <span class="flow-arrow" aria-hidden="true">→</span>
-          <article class="flow-step"><span class="step-index">04</span><span class="step-type">THE PRIVATE SOURCE</span><h3>S3 bucket</h3><p>Checks its policy, then returns the requested website file.</p></article>
-        </div>
-        <div class="request-details">
-          <div class="prose">
-            <h3>What happens on a cache miss?</h3>
-            <ol class="numbered-explanation">
-              <li><strong>The browser asks for a page.</strong> The request uses HTTPS, so the connection to CloudFront is encrypted.</li>
-              <li><strong>CloudFront checks its cache.</strong> If it already has a fresh copy, it can respond without asking S3. This is a cache hit.</li>
-              <li><strong>On a cache miss, CloudFront goes to S3.</strong> It signs the request with OAC. A visitor cannot copy this signed request and use it to browse the bucket.</li>
-              <li><strong>S3 checks the bucket policy.</strong> It allows the CloudFront service to read objects only when the request names this distribution as its source.</li>
-              <li><strong>CloudFront returns the file.</strong> It applies the configured response headers and sends the file over HTTPS. It can keep a cached copy for later requests.</li>
-            </ol>
+          <div class="request-layout">
+            <div class="request-story">
+              <div class="request-step"><span>01</span><div><h3>The browser connects</h3><p>CloudFront accepts the request over HTTPS and checks whether a fresh copy is already cached nearby.</p></div></div>
+              <div class="request-step"><span>02</span><div><h3>The edge checks the origin</h3><p>On a cache miss, CloudFront signs its request with Origin Access Control (OAC) and AWS Signature Version 4.</p></div></div>
+              <div class="request-step"><span>03</span><div><h3>S3 checks who is asking</h3><p>The bucket policy allows reads from this distribution only. CloudFront returns the file and can cache it for the next visitor.</p></div></div>
+            </div>
+            <aside class="plain-language"><span class="quote-mark" aria-hidden="true">“</span><div><p class="eyebrow">IN EVERYDAY WORDS</p><p>The files are in a locked archive. CloudFront is the staffed front desk: it can fetch a file from the archive, then keep a nearby copy ready for the next visitor.</p><small>That’s the idea behind a private S3 origin.</small></div></aside>
           </div>
-          <aside class="note-card"><span class="note-mark" aria-hidden="true">↳</span><div><h3>Why use the S3 REST origin?</h3><p>This project does not enable S3 website hosting. CloudFront connects to the bucket’s regular S3 endpoint and uses OAC. That combination supports a private bucket; the S3 website endpoint does not use OAC.</p></div></aside>
+          <div class="design-choice"><span class="design-icon" aria-hidden="true">↳</span><p><strong>Why not S3 website hosting?</strong> This setup uses the regular S3 API endpoint, so CloudFront can authenticate to the private bucket with OAC. S3’s website endpoint does not support OAC.</p></div>
         </div>
       </section>
 
-      <section class="section section-dark" id="deployment" aria-labelledby="deployment-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">03 / A CODE CHANGE GOES LIVE</p><h2 id="deployment-title">How automatic publishing works</h2></div>
-          <p class="heading-note">A push to <code>main</code> is the starting signal.</p>
-        </div>
-        <div class="deploy-flow">
-          <article><span>01 · CHANGE</span><h3>Update a site file</h3><p>Edit HTML or CSS under <code>site/</code> and push it to <code>main</code>. The workflow can also be started manually from GitHub Actions.</p></article>
-          <article><span>02 · CHECK</span><h3>GitHub proves its identity</h3><p>GitHub Actions requests an OIDC token. AWS checks its audience and its exact repository-and-branch subject.</p></article>
-          <article><span>03 · AUTHORIZE</span><h3>AWS issues temporary credentials</h3><p>A dedicated IAM role permits this repository’s main branch to publish the site. The credentials expire automatically.</p></article>
-          <article><span>04 · PUBLISH</span><h3>Files sync; cache clears</h3><p>The workflow syncs <code>site/</code> to S3, removes stale site files, then asks CloudFront to invalidate <code>/*</code>.</p></article>
-        </div>
-        <div class="deploy-bottomline"><span>SECURITY DETAIL</span><p>No permanent AWS access key is stored in GitHub. The deploy role can update website objects and invalidate this distribution; it cannot create or change AWS infrastructure.</p></div>
-        <details class="technical-detail">
-          <summary>Technical details of the deployment role</summary>
-          <div class="technical-detail-body">
-            <p>The OIDC audience is <code>sts.amazonaws.com</code>. The trust subject is limited to <code>repo:ZJXDL@192978802/aws-static-portfolio@1414794721:ref:refs/heads/main</code>, tying access to this owner, repository, and branch.</p>
-            <p>The inline permissions are <code>s3:ListBucket</code>, <code>s3:ListBucketMultipartUploads</code>, <code>s3:PutObject</code>, <code>s3:DeleteObject</code>, <code>s3:AbortMultipartUpload</code>, <code>s3:ListMultipartUploadParts</code>, and <code>cloudfront:CreateInvalidation</code>. S3 actions are scoped to this bucket and its objects; invalidation is scoped to this distribution.</p>
-            <p>The workflow uses <code>actions/checkout@v7.0.1</code> and <code>aws-actions/configure-aws-credentials@v6.3.0</code>. The IAM role and OIDC provider are configured in IAM separately from the ten OpenTofu-managed resources.</p>
+      <section class="delivery" id="delivery" aria-labelledby="delivery-title">
+        <div class="delivery-inner">
+          <div class="section-kicker"><span>02</span><span>THE RELEASE</span></div>
+          <div class="delivery-content">
+            <div class="section-heading delivery-heading">
+              <div><p class="eyebrow">FROM A COMMIT TO A LIVE CHANGE</p><h2 id="delivery-title">No long-lived keys.<br><em>Just a trusted workflow.</em></h2></div>
+              <p class="section-lede">A change to the site starts a GitHub Actions workflow. AWS checks who the workflow is before granting short-lived permission to publish.</p>
+            </div>
+            <div class="release-flow">
+              <article><span class="release-number">01</span><h3>Change</h3><p>Edit HTML or CSS in <code>site/</code> and push to <code>main</code>.</p></article>
+              <article><span class="release-number">02</span><h3>Prove identity</h3><p>GitHub presents an OIDC token tied to this repository and branch.</p></article>
+              <article><span class="release-number">03</span><h3>Get temporary access</h3><p>AWS validates the token, then grants the workflow a limited IAM role.</p></article>
+              <article><span class="release-number">04</span><h3>Publish</h3><p>Files sync to S3; CloudFront clears its cache so visitors get the update.</p></article>
+            </div>
+            <div class="release-foot"><span class="release-seal" aria-hidden="true">✓</span><p><strong>Credentials expire automatically.</strong> The publishing role can change website files and request a cache invalidation; it cannot change the AWS infrastructure.</p></div>
+            <details class="technical-detail"><summary>More about the AWS trust and deployment permissions</summary><div><p>The workflow requests an OIDC token with audience <code>sts.amazonaws.com</code>. The IAM role trust policy limits access to this repository’s <code>main</code> branch.</p><p>Its permissions are scoped to listing and updating this site’s S3 bucket and creating invalidations for this CloudFront distribution. The OIDC provider and deploy role were configured in IAM outside the ten OpenTofu-managed resources.</p></div></details>
           </div>
-        </details>
-      </section>
-
-      <section class="section" id="inventory" aria-labelledby="inventory-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">04 / THE BUILD</p><h2 id="inventory-title">What OpenTofu manages</h2></div>
-          <p class="heading-note">Ten AWS resources. Each one has a specific job.</p>
-        </div>
-        <div class="resource-table-wrap">
-          <table class="resource-table">
-            <thead><tr><th scope="col">Resource</th><th scope="col">Job</th><th scope="col">Why it matters</th></tr></thead>
-            <tbody>
-              <tr><th scope="row"><span>01</span> S3 bucket</th><td>Stores HTML and CSS.</td><td>The bucket is private. <code>force_destroy</code> is enabled for this dedicated learning project so teardown can remove its contents.</td></tr>
-              <tr><th scope="row"><span>02</span> Ownership controls</th><td>Sets bucket-owner ownership.</td><td>Disables object ACLs, so access is handled through policies instead.</td></tr>
-              <tr><th scope="row"><span>03</span> Public access block</th><td>Blocks public bucket access.</td><td>All four S3 Block Public Access settings are enabled.</td></tr>
-              <tr><th scope="row"><span>04</span> Encryption configuration</th><td>Encrypts stored objects.</td><td>Uses S3-managed AES-256 keys, called SSE-S3.</td></tr>
-              <tr><th scope="row"><span>05</span> Versioning</th><td>Keeps prior object versions.</td><td>Provides a recovery point for earlier files. Restoring one is a manual operation.</td></tr>
-              <tr><th scope="row"><span>06</span> Lifecycle configuration</th><td>Cleans up old versions.</td><td>Expires noncurrent versions after 30 days and aborts incomplete multipart uploads after 7 days.</td></tr>
-              <tr><th scope="row"><span>07</span> CloudFront OAC</th><td>Signs origin requests.</td><td>Lets CloudFront read from S3 without making the bucket public.</td></tr>
-              <tr><th scope="row"><span>08</span> Response headers policy</th><td>Adds browser security headers.</td><td>Sets HSTS, CSP, frame denial, content-type protection, and a referrer policy.</td></tr>
-              <tr><th scope="row"><span>09</span> CloudFront distribution</th><td>Serves the public website.</td><td>Redirects HTTP to HTTPS, uses the default CloudFront certificate, requires TLS 1.2 or newer, and uses PriceClass_100. It caches GET and HEAD for a default of 1 hour and a maximum of 24 hours, compresses responses, and forwards no cookies or query strings.</td></tr>
-              <tr><th scope="row"><span>10</span> S3 bucket policy</th><td>Grants CloudFront read access.</td><td>Allows <code>s3:GetObject</code> only for requests from this distribution’s ARN.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="table-caption">The GitHub OIDC provider, the <code>GitHubPortfolioDeployRole</code>, and its inline permissions policy were set up separately in IAM. They are not included in the ten OpenTofu-managed resources.</p>
-      </section>
-
-      <section class="section section-soft" id="security" aria-labelledby="security-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">05 / SECURITY &amp; TRUST BOUNDARIES</p><h2 id="security-title">What is protected, and how?</h2></div>
-          <p class="heading-note">Security is a set of specific checks, not a label.</p>
-        </div>
-        <div class="security-grid">
-          <article><span class="control-tag">STORAGE</span><h3>The bucket is not public</h3><p>Block Public Access is enabled. The bucket policy does not grant anonymous visitors access.</p></article>
-          <article><span class="control-tag">ORIGIN</span><h3>CloudFront has a signed pass</h3><p>OAC signs requests. The bucket policy checks the CloudFront distribution ARN before allowing reads.</p></article>
-          <article><span class="control-tag">VISITOR CONNECTION</span><h3>HTTPS is enforced</h3><p>HTTP is redirected to HTTPS. The distribution requires TLS 1.2 or newer and uses CloudFront’s default certificate.</p></article>
-          <article><span class="control-tag">BROWSER</span><h3>Responses carry safeguards</h3><p>Headers set HSTS, deny framing, prevent MIME sniffing, and set a Content Security Policy and Referrer-Policy.</p></article>
-          <article><span class="control-tag">STORED FILES</span><h3>Encryption and versions</h3><p>S3 encrypts objects at rest and keeps previous versions. A lifecycle rule removes old versions after 30 days.</p></article>
-          <article><span class="control-tag">DEPLOYMENT</span><h3>GitHub gets limited access</h3><p>The trust policy accepts only <code>ZJXDL/aws-static-portfolio</code> on <code>main</code>. The role can list this bucket, upload or delete its site objects, and invalidate this distribution.</p></article>
-        </div>
-        <div class="header-details"><strong>Response header settings</strong><p>HSTS uses a one-year max age with subdomains and preload enabled. The policy also sets <code>X-Frame-Options: DENY</code>, <code>X-Content-Type-Options: nosniff</code>, and <code>Referrer-Policy: strict-origin-when-cross-origin</code>. The Content Security Policy restricts scripts and default resources to this site, blocks embedded objects, and forbids framing.</p></div>
-        <div class="security-caveat"><strong>A known improvement</strong><p>The page uses system fonts and does not load Google Fonts. The deployed Content Security Policy still allows Google Fonts hosts from an earlier design. Removing that unused allowance would tighten the policy.</p></div>
-      </section>
-
-      <section class="section" id="operations" aria-labelledby="operations-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">06 / OPERATING THE PROJECT</p><h2 id="operations-title">Change it, inspect it, remove it</h2></div>
-          <p class="heading-note">The steps a maintainer actually needs.</p>
-        </div>
-        <div class="operation-grid">
-          <article class="operation-card"><span class="operation-index">01</span><h3>Publish a site change</h3><p>From the repository root, commit and push files in <code>site/</code>. GitHub Actions publishes them automatically.</p><pre><code>git add site/
-git commit -m "Update the website"
-git push</code></pre><p>To retry or deploy manually, start “Deploy portfolio” in the repository’s Actions tab.</p></article>
-          <article class="operation-card"><span class="operation-index">02</span><h3>Change infrastructure</h3><p>From <code>infra/</code>, OpenTofu compares the code with the known state and proposes changes.</p><pre><code>tofu init
-tofu plan
-tofu apply</code></pre><p>Review the plan before applying it. The GitHub deploy role cannot perform this step.</p></article>
-          <article class="operation-card operation-warning"><span class="operation-index">03</span><h3>Remove the project</h3><p>From <code>infra/</code>, destroy the stack when it is no longer needed.</p><pre><code>tofu destroy</code></pre><p><strong>Warning:</strong> the dedicated bucket uses <code>force_destroy</code>. Destroying the stack deletes its website files and stored versions.</p></article>
-        </div>
-        <div class="file-map" aria-label="Repository file guide">
-          <p class="eyebrow">WHERE THE PIECES LIVE</p>
-          <div><code>site/</code><span>The HTML and CSS visitors receive.</span></div>
-          <div><code>infra/</code><span>OpenTofu files that define the AWS resources.</span></div>
-          <div><code>.github/workflows/deploy.yml</code><span>The automated S3 upload and CloudFront invalidation.</span></div>
-          <div><code>docs/</code><span>Setup notes, policy examples, and the interview walkthrough.</span></div>
         </div>
       </section>
 
-      <section class="section section-plain" id="tradeoffs" aria-labelledby="tradeoffs-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">07 / LIMITS &amp; NEXT STEPS</p><h2 id="tradeoffs-title">What this project does not do</h2></div>
-          <p class="heading-note">A useful case study is honest about its edges.</p>
-        </div>
-        <div class="limits-list">
-          <p><strong>State is local.</strong> OpenTofu state lives on the operator’s computer and is ignored by Git. A team setup should use protected remote state with locking and backups.</p>
-          <p><strong>No custom domain.</strong> Visitors use the default CloudFront address. A branded domain needs DNS and an ACM certificate configured for CloudFront.</p>
-          <p><strong>Monitoring is minimal.</strong> This stack does not configure access logs, alarms, or an incident response process.</p>
-          <p><strong>Cache clearing is broad.</strong> The workflow invalidates <code>/*</code> after each deployment. A larger site could use versioned assets and more targeted invalidations.</p>
-          <p><strong>Costs depend on use.</strong> S3 and CloudFront can incur charges based on requests and data transfer. Review current AWS pricing and set a budget alert.</p>
-          <p><strong>It is a static site.</strong> There is no application server, API, database, user login, or dynamic content in this project.</p>
+      <section class="section engineering" id="engineering" aria-labelledby="engineering-title">
+        <div class="section-kicker"><span>03</span><span>THE BUILD</span></div>
+        <div class="section-content">
+          <div class="section-heading">
+            <div><p class="eyebrow">INFRASTRUCTURE AS CODE</p><h2 id="engineering-title">Small stack.<br><em>Specific safeguards.</em></h2></div>
+            <p class="section-lede">OpenTofu describes the AWS resources in reviewable files. Applying the same configuration can recreate the stack.</p>
+          </div>
+          <div class="resource-groups">
+            <article class="resource-group"><span class="group-index">A</span><div><p class="eyebrow">STORE</p><h3>S3 bucket</h3><p>Private object storage for the HTML, CSS, and other site files.</p><ul><li>All public-access blocks enabled</li><li>Bucket-owner ownership; ACLs disabled</li><li>AES-256 encryption and versioning</li><li>Old versions expire after 30 days</li></ul></div></article>
+            <article class="resource-group"><span class="group-index">B</span><div><p class="eyebrow">DELIVER</p><h3>CloudFront</h3><p>A global content delivery network in front of the S3 origin.</p><ul><li>HTTPS enforced; TLS 1.2 or newer</li><li>OAC signs requests to S3</li><li>Compression and caching enabled</li><li>Security headers added to responses</li></ul></div></article>
+            <article class="resource-group"><span class="group-index">C</span><div><p class="eyebrow">AUTHORIZE</p><h3>Bucket policy</h3><p>A single, explicit rule connects the public delivery layer to private storage.</p><ul><li>Allows <code>s3:GetObject</code> to CloudFront</li><li>Requires this distribution’s ARN</li><li>No anonymous read permission</li></ul></div></article>
+          </div>
+          <details class="resource-detail"><summary>Resource inventory · all 10 managed AWS resources</summary><ol><li>S3 bucket</li><li>S3 ownership controls</li><li>S3 public access block</li><li>S3 versioning</li><li>S3 lifecycle configuration</li><li>S3 server-side encryption configuration</li><li>CloudFront Origin Access Control</li><li>CloudFront response headers policy</li><li>CloudFront distribution</li><li>S3 bucket policy</li></ol></details>
+          <div class="security-note"><span class="security-mark" aria-hidden="true">✳</span><div><p class="eyebrow">BROWSER SAFEGUARDS</p><p>Responses include HSTS, clickjacking protection, MIME-sniffing protection, a Content Security Policy, and a referrer policy. These headers reduce common browser-side risks; they do not replace application security.</p></div></div>
         </div>
       </section>
 
-      <section class="section" id="glossary" aria-labelledby="glossary-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">A SMALL GLOSSARY</p><h2 id="glossary-title">Cloud terms, in everyday words</h2></div>
-          <p class="heading-note">A quick reference for first-time readers.</p>
+      <section class="operations" aria-labelledby="operations-title">
+        <div class="section-kicker"><span>04</span><span>RUN &amp; REFLECT</span></div>
+        <div class="operations-content">
+          <div class="section-heading">
+            <div><p class="eyebrow">A SMALL OPERATOR’S GUIDE</p><h2 id="operations-title">Change it.<br><em>Understand its edges.</em></h2></div>
+            <p class="section-lede">The deployment workflow handles site files. Infrastructure changes stay a deliberate OpenTofu operation.</p>
+          </div>
+          <div class="operator-grid">
+            <div class="operator-card"><span class="operator-label">WEBSITE CHANGE</span><h3>Push a site edit</h3><p>Commit changes under <code>site/</code> and push to <code>main</code>. GitHub Actions uploads them and clears the CDN cache.</p><div class="mini-flow"><span>edit</span><i>→</i><span>push</span><i>→</i><span>publish</span></div></div>
+            <div class="operator-card"><span class="operator-label">INFRASTRUCTURE CHANGE</span><h3>Review before applying</h3><p>From <code>infra/</code>, OpenTofu shows the proposed changes before it modifies AWS.</p><pre><code>tofu plan
+tofu apply</code></pre></div>
+          </div>
+          <div class="tradeoffs"><p class="eyebrow">WHAT THIS PROJECT DOES NOT INCLUDE</p><div><p><strong>Remote state</strong><br>OpenTofu state is local. A team deployment needs protected remote state, locking, and backups.</p><p><strong>Custom domain</strong><br>The site uses CloudFront’s default address. A domain would need DNS and an ACM certificate.</p><p><strong>Application backend</strong><br>This is a static site, with no API, database, login, or dynamic content.</p></div></div>
         </div>
-        <dl class="glossary-grid">
-          <div><dt>Static website</dt><dd>Pages made from files such as HTML and CSS. A server does not build each page when someone visits.</dd></div>
-          <div><dt>Amazon S3</dt><dd>A service for storing files as objects in buckets.</dd></div>
-          <div><dt>CloudFront</dt><dd>A content delivery network that serves copies of content from locations closer to visitors.</dd></div>
-          <div><dt>Origin</dt><dd>The source CloudFront reads from. Here, the origin is the S3 bucket.</dd></div>
-          <div><dt>Cache</dt><dd>A temporary nearby copy. Reusing it can make later requests faster and avoid a trip to S3.</dd></div>
-          <div><dt>OAC</dt><dd>Origin Access Control. It signs CloudFront’s requests so a private S3 bucket can verify the reader.</dd></div>
-          <div><dt>OpenTofu</dt><dd>A tool that describes infrastructure in files and applies planned changes to cloud resources.</dd></div>
-          <div><dt>OIDC</dt><dd>OpenID Connect. Here, it lets GitHub prove a workflow’s identity to AWS and request temporary access.</dd></div>
-          <div><dt>IAM role</dt><dd>An AWS identity with permissions that a trusted service or workflow can temporarily use.</dd></div>
-          <div><dt>CloudFront invalidation</dt><dd>A request telling CloudFront to remove selected cached copies so newer files can be fetched.</dd></div>
-          <div><dt>Region and edge</dt><dd>The S3 bucket is in the us-east-1 region. CloudFront is a global service with edge locations around the world.</dd></div>
-          <div><dt>Infrastructure as code</dt><dd>Infrastructure described in editable files, so changes can be reviewed and repeated.</dd></div>
-        </dl>
       </section>
 
-      <section class="closing" aria-labelledby="closing-title">
-        <p class="eyebrow">THE TAKEAWAY</p>
-        <h2 id="closing-title">Small enough to understand.<br><em>Real enough to explain.</em></h2>
-        <p>This project demonstrates a private S3 origin, CloudFront delivery, security controls, infrastructure as code, and an OIDC-based publishing workflow. Its limits are documented, and its source is open to inspect.</p>
-        <div class="closing-actions">
-          <a class="button button-primary" href="https://d1650g44zju5p7.cloudfront.net">Visit the live website <span aria-hidden="true">↗</span></a>
-          <a class="button button-quiet" href="https://github.com/ZJXDL/aws-static-portfolio">Read the code on GitHub <span aria-hidden="true">↗</span></a>
-        </div>
+      <section class="closing" aria-label="Project takeaway">
+        <p class="eyebrow">THE IDEA IN ONE LINE</p>
+        <p class="closing-line">A private origin, a global edge, and a deployment path you can explain.</p>
+        <span class="closing-mark" aria-hidden="true">∿</span>
       </section>
     </main>
 
-    <footer class="site-footer"><a class="brand" href="#top"><span class="brand-mark" aria-hidden="true">F</span><span>FIELD NOTES <i>/</i> CLOUD</span></a><p>Built with HTML, CSS, AWS, and OpenTofu.<br>Delivered through CloudFront.</p></footer>
+    <footer class="site-footer"><span>FIELD STUDY 01 <i>·</i> CLOUD ENGINEERING</span><span>Built with AWS, OpenTofu, HTML, and CSS</span></footer>
   </body>
 </html>
