@@ -54,8 +54,10 @@ function formatTime(seconds) {
 }
 
 function getBest(level) {
-  const value = Number(safeStorageGet(recordKey(level)));
-  return Number.isFinite(value) && value > 0 ? value : null;
+  const stored = safeStorageGet(recordKey(level));
+  if (stored === null) return null;
+  const value = Number(stored);
+  return Number.isInteger(value) && value >= 0 ? value : null;
 }
 
 function updateBest() {
@@ -405,6 +407,13 @@ boardElement.addEventListener("click", (event) => {
   const index = Number(button.dataset.index);
   if (game.flagMode) toggleFlag(index);
   else reveal(index);
+});
+
+boardElement.addEventListener("focusin", (event) => {
+  const button = event.target.closest(".cell");
+  if (!button) return;
+  boardElement.querySelectorAll(".cell").forEach((cell) => { cell.tabIndex = -1; });
+  button.tabIndex = 0;
 });
 
 boardElement.addEventListener("contextmenu", (event) => {
