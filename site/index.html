@@ -27,6 +27,7 @@
         <p class="hero-copy">This case study explains how a static website is stored in a private S3 bucket, served globally through CloudFront, and provisioned with OpenTofu—from the request path to the security and operations decisions.</p>
         <div class="hero-actions">
           <a class="button button-primary" href="https://d1650g44zju5p7.cloudfront.net">Open the live site <span aria-hidden="true">↗</span></a>
+          <a class="button button-quiet" href="https://github.com/ZJXDL/aws-static-portfolio">View source on GitHub <span aria-hidden="true">↗</span></a>
           <a class="button button-quiet" href="#architecture">Read the architecture <span aria-hidden="true">↓</span></a>
         </div>
         <div class="hero-note"><span class="note-line"></span><span>Deployed · 10 AWS resources · S3 in us-east-1 · CloudFront global</span></div>
@@ -40,13 +41,13 @@
         <div class="overview-grid">
           <div class="prose">
             <p>The goal was to publish a static site without making its storage bucket public or running a web server. The result is a small AWS architecture that separates private origin storage from public content delivery.</p>
-            <p>OpenTofu defines the infrastructure as code. The site files are uploaded to S3, while CloudFront handles HTTPS, caching, and delivery. The current deployment was provisioned and uploaded from the AWS CLI; a GitHub Actions workflow is included as a future automation pattern, but its AWS OIDC role is not configured yet.</p>
+            <p>OpenTofu defines the infrastructure as code. GitHub Actions publishes site changes to S3, while CloudFront handles HTTPS, caching, and delivery. The workflow uses OpenID Connect (OIDC) to request short-lived AWS credentials; no long-lived AWS access key is stored in GitHub.</p>
           </div>
           <dl class="facts-card">
             <div><dt>Workload</dt><dd>Static HTML, CSS, and JavaScript</dd></div>
             <div><dt>Infrastructure</dt><dd>OpenTofu 1.13.1 · AWS provider</dd></div>
             <div><dt>Origin</dt><dd>Private Amazon S3 bucket</dd></div>
-            <div><dt>Delivery</dt><dd>Amazon CloudFront · HTTPS</dd></div>
+            <div><dt>Delivery</dt><dd>GitHub Actions · OIDC · CloudFront</dd></div>
             <div><dt>Live endpoint</dt><dd><a href="https://d1650g44zju5p7.cloudfront.net">d1650g44zju5p7.cloudfront.net ↗</a></dd></div>
           </dl>
         </div>
@@ -114,14 +115,13 @@
           <article class="ops-card"><span>PROVISION INFRASTRUCTURE</span><p>Run from the repository's <code>infra/</code> directory:</p><pre><code>tofu init
 tofu plan
 tofu apply</code></pre><p>Review the plan before approving an apply. The CloudFront distribution can take several minutes to deploy.</p></article>
-          <article class="ops-card"><span>PUBLISH SITE FILES</span><p>From the repository root, sync <code>site/</code> to the bucket, then clear CloudFront's cache:</p><pre><code>aws s3 sync site/ s3://&lt;bucket-name&gt;/
-aws cloudfront create-invalidation \
-  --distribution-id &lt;distribution-id&gt; \
-  --paths '/*'</code></pre><p>Bucket name and distribution ID are available with <code>tofu output</code>.</p></article>
+          <article class="ops-card"><span>PUBLISH SITE FILES</span><p>Push a change under <code>site/</code> to <code>main</code>, or run “Deploy portfolio” from GitHub Actions. The workflow requests short-lived AWS credentials, syncs the files to S3, and invalidates CloudFront's cache.</p><pre><code>git add site/
+git commit -m "Update the case study"
+git push</code></pre><p>The IAM role can publish this site's files and invalidate this distribution. It cannot change the infrastructure.</p></article>
           <article class="ops-card"><span>DESTROY THE STACK</span><p>When the project is no longer needed:</p><pre><code>cd infra
 tofu destroy</code></pre><p>The dedicated bucket has <code>force_destroy</code> enabled so OpenTofu can remove its contents. Do not store unrelated files in it.</p></article>
         </div>
-        <div class="delivery-note"><strong>Current delivery status</strong><p>The deployed website was uploaded from the AWS CLI. A GitHub Actions workflow is present as an example, with OIDC trust and permissions documented, but its IAM role and repository variables still need setup before automatic deployments work.</p></div>
+        <div class="delivery-note"><strong>Current delivery status</strong><p>Automatic deployment is active. GitHub Actions assumes a dedicated AWS IAM role through OIDC, syncs <code>site/</code> to the private S3 bucket, then clears the CloudFront cache. The workflow was verified with a successful deployment.</p></div>
       </section>
 
       <section class="case-section section-wrap" id="tradeoffs" aria-labelledby="tradeoffs-title">
@@ -131,7 +131,7 @@ tofu destroy</code></pre><p>The dedicated bucket has <code>force_destroy</code> 
         </div>
         <div class="tradeoff-list">
           <p><strong>Local OpenTofu state:</strong> simple for a learning project, but a team deployment should use encrypted remote state with locking and access controls.</p>
-          <p><strong>Manual first upload:</strong> easy to understand, but repeatable delivery should use the included GitHub Actions workflow with OIDC and a narrowly scoped deploy role.</p>
+          <p><strong>Broad cache invalidation:</strong> invalidating <code>/*</code> keeps this small site's workflow simple. A larger site could use versioned assets and more targeted invalidations.</p>
           <p><strong>No custom domain:</strong> the default CloudFront domain avoids DNS and certificate setup. A production branded site could add a domain and an ACM certificate.</p>
           <p><strong>Monitoring:</strong> the stack focuses on secure delivery. A next iteration could add alarms, access logging, and a documented recovery exercise.</p>
           <p><strong>Cost:</strong> S3 and CloudFront usage can incur charges. The distribution uses PriceClass_100; account usage and current AWS pricing should be reviewed before leaving the site online long term.</p>

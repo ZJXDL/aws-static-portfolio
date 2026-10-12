@@ -2,7 +2,7 @@
 
 ## 30-second summary
 
-> This project provisions a static site on AWS with OpenTofu. CloudFront serves it over HTTPS from a private S3 bucket. Origin Access Control signs CloudFront's requests, and the bucket policy allows reads only from this distribution. The current site upload uses the AWS CLI. A GitHub Actions OIDC workflow and IAM examples are included, but connecting them is a next step. The infrastructure also configures security headers, encryption, versioning, and a teardown path.
+> This project provisions a static site on AWS with OpenTofu. CloudFront serves it over HTTPS from a private S3 bucket. Origin Access Control signs CloudFront's requests, and the bucket policy allows reads only from this distribution. GitHub Actions deploys site changes using OIDC and short-lived AWS credentials. The workflow syncs the site to S3 and invalidates CloudFront. The infrastructure also configures security headers, encryption, versioning, and a teardown path.
 
 ## How a page request works
 
@@ -15,11 +15,12 @@ The S3 website hosting endpoint is not used. That lets the bucket remain private
 
 ## How deployment works
 
-1. For the current deployment, OpenTofu provisions AWS resources and the AWS CLI syncs the `site/` files to the bucket.
-2. A CloudFront invalidation clears cached paths after an update so visitors receive the new site files.
-3. The repository includes a GitHub Actions workflow for future automation. Once its OIDC provider, trust policy, IAM role, and repository variables are configured, a push to `main` can request short-lived AWS role credentials and publish the site.
+1. OpenTofu provisions the AWS resources.
+2. A push to `main` that changes `site/` starts the GitHub Actions workflow. It can also be started manually from GitHub Actions.
+3. The workflow requests a GitHub OIDC token. AWS checks its audience and repository/branch subject against the dedicated IAM role's trust policy, then returns short-lived credentials.
+4. The role syncs the site files to the private S3 bucket and requests a CloudFront invalidation. No long-lived AWS access key is stored in GitHub.
 
-The planned GitHub deploy role is scoped to website delivery and cache invalidation; it should not modify OpenTofu-managed infrastructure. Infrastructure changes are applied separately by an authorized operator.
+The GitHub deploy role is scoped to website delivery and cache invalidation; it cannot modify OpenTofu-managed infrastructure. Infrastructure changes are applied separately by an authorized operator.
 
 ## Design decisions to explain
 
